@@ -157,10 +157,6 @@ export type Database = {
         Args: { donor_group: string; recipient_group: string }
         Returns: boolean
       }
-      is_eligible_for_request: {
-        Args: { candidate_user_id?: string; target_request_id: string }
-        Returns: boolean
-      }
     }
     Enums: {
       [_ in never]: never
