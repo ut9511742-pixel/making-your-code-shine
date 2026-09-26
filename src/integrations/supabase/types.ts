@@ -14,13 +14,153 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      blood_requests: {
+        Row: {
+          area: string
+          blood_group: string
+          city: string
+          created_at: string
+          hospital: string
+          id: string
+          latitude: number
+          longitude: number
+          note: string
+          radius_km: number
+          requester_id: string
+          status: string
+          units: number
+          updated_at: string
+          urgency: string
+        }
+        Insert: {
+          area?: string
+          blood_group: string
+          city?: string
+          created_at?: string
+          hospital: string
+          id?: string
+          latitude: number
+          longitude: number
+          note?: string
+          radius_km?: number
+          requester_id: string
+          status?: string
+          units: number
+          updated_at?: string
+          urgency?: string
+        }
+        Update: {
+          area?: string
+          blood_group?: string
+          city?: string
+          created_at?: string
+          hospital?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          note?: string
+          radius_km?: number
+          requester_id?: string
+          status?: string
+          units?: number
+          updated_at?: string
+          urgency?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          area: string
+          available: boolean
+          blood_group: string
+          city: string
+          created_at: string
+          full_name: string
+          last_donation_date: string | null
+          latitude: number
+          longitude: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          area?: string
+          available?: boolean
+          blood_group?: string
+          city?: string
+          created_at?: string
+          full_name?: string
+          last_donation_date?: string | null
+          latitude?: number
+          longitude?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          area?: string
+          available?: boolean
+          blood_group?: string
+          city?: string
+          created_at?: string
+          full_name?: string
+          last_donation_date?: string | null
+          latitude?: number
+          longitude?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      request_responses: {
+        Row: {
+          created_at: string
+          donor_id: string
+          id: string
+          message: string
+          request_id: string
+          response: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          donor_id: string
+          id?: string
+          message?: string
+          request_id: string
+          response?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          donor_id?: string
+          id?: string
+          message?: string
+          request_id?: string
+          response?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_responses_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "blood_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      blood_group_compatible: {
+        Args: { donor_group: string; recipient_group: string }
+        Returns: boolean
+      }
+      is_eligible_for_request: {
+        Args: { candidate_user_id?: string; target_request_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
