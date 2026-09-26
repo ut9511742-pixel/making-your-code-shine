@@ -157,6 +157,24 @@ export type Database = {
         Args: { donor_group: string; recipient_group: string }
         Returns: boolean
       }
+      search_donors: {
+        Args: {
+          search_blood_group: string
+          search_city: string
+          search_latitude: number
+          search_longitude: number
+          search_radius_km: number
+        }
+        Returns: {
+          area: string
+          available: boolean
+          blood_group: string
+          city: string
+          days_since_donation: number
+          distance_km: number
+          donor_initials: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
