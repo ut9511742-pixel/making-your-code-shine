@@ -72,39 +72,42 @@ export type Database = {
         Row: {
           area: string
           available: boolean
-          blood_group: string
+          blood_group: string | null
           city: string
           created_at: string
           full_name: string
           last_donation_date: string | null
           latitude: number
           longitude: number
+          phone: string
           updated_at: string
           user_id: string
         }
         Insert: {
           area?: string
           available?: boolean
-          blood_group?: string
+          blood_group?: string | null
           city?: string
           created_at?: string
           full_name?: string
           last_donation_date?: string | null
           latitude?: number
           longitude?: number
+          phone?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           area?: string
           available?: boolean
-          blood_group?: string
+          blood_group?: string | null
           city?: string
           created_at?: string
           full_name?: string
           last_donation_date?: string | null
           latitude?: number
           longitude?: number
+          phone?: string
           updated_at?: string
           user_id?: string
         }
@@ -153,9 +156,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accepted_request_contacts: {
+        Args: { target_request_id: string }
+        Returns: {
+          member_name: string
+          member_role: string
+          phone: string
+        }[]
+      }
       blood_group_compatible: {
         Args: { donor_group: string; recipient_group: string }
         Returns: boolean
+      }
+      search_donors: {
+        Args: {
+          search_blood_group: string
+          search_city: string
+          search_latitude: number
+          search_longitude: number
+          search_radius_km: number
+        }
+        Returns: {
+          area: string
+          available: boolean
+          blood_group: string
+          city: string
+          days_since_donation: number
+          distance_km: number
+          donor_initials: string
+        }[]
       }
     }
     Enums: {
