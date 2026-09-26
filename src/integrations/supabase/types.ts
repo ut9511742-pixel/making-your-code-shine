@@ -79,6 +79,7 @@ export type Database = {
           last_donation_date: string | null
           latitude: number
           longitude: number
+          phone: string
           updated_at: string
           user_id: string
         }
@@ -92,6 +93,7 @@ export type Database = {
           last_donation_date?: string | null
           latitude?: number
           longitude?: number
+          phone?: string
           updated_at?: string
           user_id: string
         }
@@ -105,6 +107,7 @@ export type Database = {
           last_donation_date?: string | null
           latitude?: number
           longitude?: number
+          phone?: string
           updated_at?: string
           user_id?: string
         }
@@ -153,6 +156,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accepted_request_contacts: {
+        Args: { target_request_id: string }
+        Returns: {
+          member_name: string
+          member_role: string
+          phone: string
+        }[]
+      }
       blood_group_compatible: {
         Args: { donor_group: string; recipient_group: string }
         Returns: boolean
