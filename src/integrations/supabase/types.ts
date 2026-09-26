@@ -72,7 +72,7 @@ export type Database = {
         Row: {
           area: string
           available: boolean
-          blood_group: string
+          blood_group: string | null
           city: string
           created_at: string
           full_name: string
@@ -85,7 +85,7 @@ export type Database = {
         Insert: {
           area?: string
           available?: boolean
-          blood_group?: string
+          blood_group?: string | null
           city?: string
           created_at?: string
           full_name?: string
@@ -98,7 +98,7 @@ export type Database = {
         Update: {
           area?: string
           available?: boolean
-          blood_group?: string
+          blood_group?: string | null
           city?: string
           created_at?: string
           full_name?: string
