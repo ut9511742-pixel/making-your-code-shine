@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- BloodConnect uses one shared `src/components/bloodconnect.tsx` experience across its three public routes so auth and navigation remain consistent.
