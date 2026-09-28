@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DonorsRouteImport } from './routes/donors'
 import { Route as NewRequestRouteImport } from './routes/new-request'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RequestsRouteImport } from './routes/requests'
 
 const IndexRoute = IndexRouteImport.update({
@@ -18,9 +20,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DonorsRoute = DonorsRouteImport.update({
+  id: '/donors',
+  path: '/donors',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewRequestRoute = NewRequestRouteImport.update({
   id: '/new-request',
   path: '/new-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RequestsRoute = RequestsRouteImport.update({
@@ -31,31 +43,39 @@ const RequestsRoute = RequestsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/donors': typeof DonorsRoute
   '/new-request': typeof NewRequestRoute
+  '/profile': typeof ProfileRoute
   '/requests': typeof RequestsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/donors': typeof DonorsRoute
   '/new-request': typeof NewRequestRoute
+  '/profile': typeof ProfileRoute
   '/requests': typeof RequestsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/donors': typeof DonorsRoute
   '/new-request': typeof NewRequestRoute
+  '/profile': typeof ProfileRoute
   '/requests': typeof RequestsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/new-request' | '/requests'
+  fullPaths: '/' | '/donors' | '/new-request' | '/profile' | '/requests'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/new-request' | '/requests'
-  id: '__root__' | '/' | '/new-request' | '/requests'
+  to: '/' | '/donors' | '/new-request' | '/profile' | '/requests'
+  id: '__root__' | '/' | '/donors' | '/new-request' | '/profile' | '/requests'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DonorsRoute: typeof DonorsRoute
   NewRequestRoute: typeof NewRequestRoute
+  ProfileRoute: typeof ProfileRoute
   RequestsRoute: typeof RequestsRoute
 }
 
@@ -68,11 +88,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/donors': {
+      id: '/donors'
+      path: '/donors'
+      fullPath: '/donors'
+      preLoaderRoute: typeof DonorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/new-request': {
       id: '/new-request'
       path: '/new-request'
       fullPath: '/new-request'
       preLoaderRoute: typeof NewRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/requests': {
@@ -87,7 +121,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DonorsRoute: DonorsRoute,
   NewRequestRoute: NewRequestRoute,
+  ProfileRoute: ProfileRoute,
   RequestsRoute: RequestsRoute,
 }
 export const routeTree = rootRouteImport
