@@ -9,4 +9,5 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- BloodConnect uses one shared `src/components/bloodconnect.tsx` experience across its three public routes so auth and navigation remain consistent.
+- BloodConnect uses one shared `src/components/bloodconnect.tsx` experience across its five public routes so auth and navigation remain consistent.
+- Imported donor records stay in the private `bloodconnect_private` schema and reach clients only through the pseudonymous search function, preventing raw identity and phone exposure.

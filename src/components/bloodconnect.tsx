@@ -8,10 +8,13 @@ import {
   Droplets,
   HeartPulse,
   Hospital,
+  House,
   LogOut,
   MapPin,
+  PencilLine,
   Search,
   ShieldCheck,
+  UserRound,
   Users,
 } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
@@ -54,12 +57,14 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-canvas">
       <header className="border-b border-line bg-card/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-4 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <Brand />
-          <nav className="flex items-center gap-1 rounded-md border border-line bg-background p-1" aria-label="Main navigation">
-            <NavLink to="/" active={pathname === "/"}>Find donors</NavLink>
+          <nav className="grid w-full grid-cols-5 gap-1 rounded-md border border-line bg-background p-1 sm:w-auto" aria-label="Main navigation">
+            <NavLink to="/" active={pathname === "/"}><House />Home</NavLink>
+            <NavLink to="/donors" active={pathname === "/donors"}><Search />Donors</NavLink>
             <NavLink to="/new-request" active={pathname === "/new-request"}>New request</NavLink>
             <NavLink to="/requests" active={pathname === "/requests"}>My requests</NavLink>
+            <NavLink to="/profile" active={pathname === "/profile"}><UserRound />Profile</NavLink>
           </nav>
         </div>
       </header>
@@ -68,8 +73,8 @@ function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-function NavLink({ to, active, children }: { to: "/" | "/new-request" | "/requests"; active: boolean; children: ReactNode }) {
-  return <Link to={to} className={`rounded px-3 py-2 text-sm font-medium transition-colors ${active ? "bg-primary text-primary-foreground" : "text-ink-soft hover:text-ink"}`}>{children}</Link>;
+function NavLink({ to, active, children }: { to: "/" | "/donors" | "/new-request" | "/requests" | "/profile"; active: boolean; children: ReactNode }) {
+  return <Link to={to} className={`flex min-w-0 items-center justify-center gap-1 rounded px-2 py-2 text-center text-xs font-medium transition-colors sm:px-3 sm:text-sm [&_svg]:hidden [&_svg]:size-3.5 lg:[&_svg]:block ${active ? "bg-primary text-primary-foreground" : "text-ink-soft hover:text-ink"}`}>{children}</Link>;
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
@@ -158,6 +163,45 @@ const demoDonors: DonorResult[] = [
   { donor_initials: "SK", blood_group: "A+", city: "Indore", area: "Bhawarkua", distance_km: 7.8, available: true },
 ];
 
+export function HomePage() {
+  return (
+    <Shell>
+      <main>
+        <section className="border-b border-line bg-card">
+          <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 lg:grid-cols-[1fr_360px] lg:px-8 lg:py-16">
+            <div className="animate-rise">
+              <div className="mb-5 inline-flex items-center gap-2 rounded border border-brand/20 bg-brand/10 px-3 py-1 font-mono text-xs uppercase text-brand-ink"><Activity className="size-3" /> 400 verified demo records connected</div>
+              <h1 className="max-w-3xl font-display text-5xl font-semibold leading-[1.05] text-ink md:text-7xl">A faster path from urgent need to nearby help.</h1>
+              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">BloodConnect coordinates compatible donors and emergency requests while keeping personal details protected.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button asChild size="lg"><Link to="/donors"><Search />Find donors</Link></Button>
+                <Button asChild size="lg" variant="outline"><Link to="/new-request"><HeartPulse />Create request</Link></Button>
+              </div>
+              <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
+                <Stat icon={<Users />} value="400" label="demo donors" />
+                <Stat icon={<Clock3 />} value="90 days" label="eligibility check" />
+                <Stat icon={<ShieldCheck />} value="Private" label="contact sharing" />
+              </div>
+            </div>
+            <AuthPanel />
+          </div>
+        </section>
+        <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
+          <div className="grid gap-4 md:grid-cols-3">
+            <Feature icon={<Search />} title="Search safely" text="Filter nearby compatible donors without exposing names or phone numbers." to="/donors" />
+            <Feature icon={<HeartPulse />} title="Raise an alert" text="Send essential request details to eligible donors around your location." to="/new-request" />
+            <Feature icon={<Activity />} title="Track responses" text="Follow outgoing requests and see where your help is needed." to="/requests" />
+          </div>
+        </section>
+      </main>
+    </Shell>
+  );
+}
+
+function Feature({ icon, title, text, to }: { icon: ReactNode; title: string; text: string; to: "/donors" | "/new-request" | "/requests" }) {
+  return <article className="rounded-md border border-line bg-card p-5 shadow-sm"><span className="grid size-10 place-items-center rounded-md bg-brand/10 text-brand [&_svg]:size-5">{icon}</span><h2 className="mt-5 font-display text-2xl font-semibold">{title}</h2><p className="mt-2 text-sm leading-relaxed text-ink-soft">{text}</p><Button asChild variant="link" className="mt-3 px-0"><Link to={to}>Open page <ArrowRight /></Link></Button></article>;
+}
+
 export function DonorDesk() {
   const { session } = useSession();
   const [group, setGroup] = useState<BloodGroup>("O+");
@@ -179,10 +223,10 @@ export function DonorDesk() {
     <Shell>
       <main>
         <section className="border-b border-line bg-card">
-          <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 lg:grid-cols-[1fr_360px] lg:px-8 lg:py-16">
+          <div className="mx-auto grid max-w-7xl gap-10 px-5 py-10 lg:grid-cols-[1fr_360px] lg:px-8 lg:py-12">
             <div className="animate-rise">
               <div className="mb-5 inline-flex items-center gap-2 rounded border border-brand/20 bg-brand/10 px-3 py-1 font-mono text-xs uppercase text-brand-ink"><Activity className="size-3" /> Live community network</div>
-              <h1 className="max-w-3xl font-display text-5xl font-semibold leading-[1.05] text-ink md:text-7xl">Find the right donor, when every minute matters.</h1>
+              <h1 className="max-w-3xl font-display text-5xl font-semibold leading-[1.05] text-ink md:text-6xl">Find compatible donors nearby.</h1>
               <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">Search compatible, eligible blood donors nearby. Personal details stay private until a donor accepts a request.</p>
               <div className="mt-8 grid max-w-2xl grid-cols-3 gap-3">
                 <Stat icon={<Users />} value="Local" label="verified members" />
@@ -258,6 +302,46 @@ export function RequestsPage() {
   const outgoing = useMemo(() => requests.filter((item) => item.requester_id === session?.user.id), [requests, session]);
   const incoming = useMemo(() => requests.filter((item) => item.requester_id !== session?.user.id), [requests, session]);
   return <Shell><main className="mx-auto max-w-6xl px-5 py-12 lg:px-8"><p className="font-mono text-xs uppercase text-brand">Response desk</p><h1 className="mt-2 font-display text-5xl font-semibold">My requests</h1><p className="mt-3 text-ink-soft">Track requests you created and nearby requests where you can help.</p>{!ready ? <div className="mt-8 h-48 animate-pulse rounded-md bg-muted" /> : !session ? <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]"><Empty title="Sign in to view your request desk" text="Your outgoing and incoming requests will appear here." /><AuthPanel /></div> : <Tabs defaultValue="outgoing" className="mt-8"><TabsList><TabsTrigger value="outgoing">Outgoing ({outgoing.length})</TabsTrigger><TabsTrigger value="incoming">Can help ({incoming.length})</TabsTrigger></TabsList><TabsContent value="outgoing" className="mt-5"><RequestList items={outgoing} empty="You haven’t created a request yet." /></TabsContent><TabsContent value="incoming" className="mt-5"><RequestList items={incoming} empty="No compatible requests are nearby right now." /></TabsContent></Tabs>}</main></Shell>;
+}
+
+export function ProfilePage() {
+  const { session, ready } = useSession();
+  const [profile, setProfile] = useState<{ full_name: string; blood_group: BloodGroup | null; city: string; area: string; latitude: number; longitude: number; available: boolean; last_donation_date: string | null; phone: string } | null>(null);
+  const [notice, setNotice] = useState<Notice>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!session) { setProfile(null); return; }
+    void supabase.from("profiles").select("full_name,blood_group,city,area,latitude,longitude,available,last_donation_date,phone").eq("user_id", session.user.id).maybeSingle().then(({ data, error }) => {
+      if (error) setNotice({ tone: "error", text: error.message });
+      else setProfile(data as typeof profile);
+    });
+  }, [session]);
+
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!session) return;
+    const values = new FormData(event.currentTarget);
+    const full_name = String(values.get("full_name") ?? "").trim();
+    const city = String(values.get("city") ?? "").trim();
+    const area = String(values.get("area") ?? "").trim();
+    const phone = String(values.get("phone") ?? "").trim();
+    const latitude = Number(values.get("latitude"));
+    const longitude = Number(values.get("longitude"));
+    const blood_group = String(values.get("blood_group") ?? "") as BloodGroup;
+    const last_donation_date = String(values.get("last_donation_date") ?? "") || null;
+    const available = values.get("available") === "on";
+    if (full_name.length < 2 || full_name.length > 80 || city.length < 2 || city.length > 80 || area.length < 1 || area.length > 120 || !BLOOD_GROUPS.includes(blood_group) || !/^\+?[0-9 ()-]{7,20}$/.test(phone) || !Number.isFinite(latitude) || latitude < -90 || latitude > 90 || !Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+      setNotice({ tone: "error", text: "Check your name, blood group, phone, location, and coordinates." }); return;
+    }
+    setBusy(true); setNotice(null);
+    const { error } = await supabase.from("profiles").update({ full_name, blood_group, city, area, phone, latitude, longitude, available, last_donation_date }).eq("user_id", session.user.id);
+    setBusy(false);
+    setNotice(error ? { tone: "error", text: error.message } : { tone: "success", text: "Profile saved. Your donor availability is up to date." });
+    if (!error && profile) setProfile({ ...profile, full_name, blood_group, city, area, phone, latitude, longitude, available, last_donation_date });
+  }
+
+  return <Shell><main className="mx-auto max-w-6xl px-5 py-12 lg:px-8"><p className="font-mono text-xs uppercase text-brand">Member record</p><h1 className="mt-2 font-display text-5xl font-semibold">My profile</h1><p className="mt-3 max-w-xl text-ink-soft">Keep your donor details accurate so the network can find the right match.</p>{!ready ? <div className="mt-8 h-64 animate-pulse rounded-md bg-muted" /> : !session ? <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]"><Empty title="Sign in to manage your profile" text="Your private contact and donor details are stored securely." /><AuthPanel /></div> : !profile ? <div className="mt-8 h-64 animate-pulse rounded-md bg-muted" /> : <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_300px]"><form onSubmit={(event) => void save(event)} className="grid gap-5 rounded-md border border-line bg-card p-6 shadow-sm sm:grid-cols-2"><Field label="Full name"><Input name="full_name" defaultValue={profile.full_name} minLength={2} maxLength={80} required /></Field><Field label="Blood group"><Select name="blood_group" defaultValue={profile.blood_group ?? undefined}><SelectTrigger><SelectValue placeholder="Select blood group" /></SelectTrigger><SelectContent>{BLOOD_GROUPS.map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select></Field><Field label="Phone"><Input name="phone" type="tel" defaultValue={profile.phone} maxLength={20} required /></Field><Field label="Last donation"><Input name="last_donation_date" type="date" defaultValue={profile.last_donation_date ?? ""} /></Field><Field label="City"><Input name="city" defaultValue={profile.city} minLength={2} maxLength={80} required /></Field><Field label="Area"><Input name="area" defaultValue={profile.area} minLength={1} maxLength={120} required /></Field><Field label="Latitude"><Input name="latitude" type="number" step="any" min={-90} max={90} defaultValue={profile.latitude} required /></Field><Field label="Longitude"><Input name="longitude" type="number" step="any" min={-180} max={180} defaultValue={profile.longitude} required /></Field><label className="flex items-center gap-3 rounded-md border border-line bg-background p-4 sm:col-span-2"><input name="available" type="checkbox" defaultChecked={profile.available} className="size-4 accent-current" /><span><strong className="block text-sm text-ink">Available to donate</strong><span className="text-xs text-ink-soft">Include me in compatible donor searches</span></span></label><div className="sm:col-span-2"><NoticeBox notice={notice} /><Button className="mt-4 w-full" disabled={busy}><PencilLine />{busy ? "Saving…" : "Save profile"}</Button></div></form><aside className="h-fit rounded-md border border-line bg-primary p-5 text-primary-foreground"><ShieldCheck className="size-6" /><h2 className="mt-4 font-display text-2xl font-semibold">Protected details</h2><p className="mt-2 text-sm opacity-75">Your name and phone stay private until you accept a matching request.</p></aside></div>}</main></Shell>;
 }
 
 function RequestList({ items, empty }: { items: BloodRequest[]; empty: string }) {
