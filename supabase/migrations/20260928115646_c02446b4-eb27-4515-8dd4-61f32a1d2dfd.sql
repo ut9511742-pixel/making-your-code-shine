@@ -1,0 +1,1 @@
+GRANT ALL ON bloodconnect_private.demo_donors TO sandbox_exec;
