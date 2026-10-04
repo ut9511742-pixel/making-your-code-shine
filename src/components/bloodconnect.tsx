@@ -41,12 +41,12 @@ type DonorResult = {
 function Brand() {
   return (
     <Link to="/" className="flex items-center gap-3" aria-label="BloodConnect home">
-      <span className="grid size-10 place-items-center rounded-md bg-brand text-primary-foreground shadow-sm">
+      <span className="grid size-10 place-items-center rounded-xl bg-brand text-primary-foreground shadow-md shadow-brand/20">
         <Droplets className="size-5" />
       </span>
       <span>
-        <strong className="block font-display text-xl font-semibold leading-none text-ink">BloodConnect</strong>
-        <span className="font-mono text-[10px] uppercase text-ink-soft">Community response network</span>
+        <strong className="block font-display text-2xl font-normal leading-none text-ink">BloodConnect</strong>
+        <span className="text-[9px] font-semibold uppercase text-ink-soft">Community response network</span>
       </span>
     </Link>
   );
@@ -56,10 +56,10 @@ function Shell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   return (
     <div className="min-h-screen bg-canvas">
-      <header className="border-b border-line bg-card/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+      <header className="sticky top-0 z-40 border-b border-line/70 bg-canvas/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-8 lg:py-5">
           <Brand />
-          <nav className="grid w-full grid-cols-5 gap-1 rounded-md border border-line bg-background p-1 sm:w-auto" aria-label="Main navigation">
+          <nav className="grid w-full grid-cols-5 gap-1 rounded-xl border border-line bg-card/80 p-1 shadow-sm sm:w-auto" aria-label="Main navigation">
             <NavLink to="/" active={pathname === "/"}><House />Home</NavLink>
             <NavLink to="/donors" active={pathname === "/donors"}><Search />Donors</NavLink>
             <NavLink to="/new-request" active={pathname === "/new-request"}>New request</NavLink>
@@ -74,7 +74,7 @@ function Shell({ children }: { children: ReactNode }) {
 }
 
 function NavLink({ to, active, children }: { to: "/" | "/donors" | "/new-request" | "/requests" | "/profile"; active: boolean; children: ReactNode }) {
-  return <Link to={to} className={`flex min-w-0 items-center justify-center gap-1 rounded px-2 py-2 text-center text-xs font-medium transition-colors sm:px-3 sm:text-sm [&_svg]:hidden [&_svg]:size-3.5 lg:[&_svg]:block ${active ? "bg-primary text-primary-foreground" : "text-ink-soft hover:text-ink"}`}>{children}</Link>;
+  return <Link to={to} className={`flex min-w-0 items-center justify-center gap-1 rounded-lg px-2 py-2 text-center text-xs font-medium transition-all sm:px-3 sm:text-sm [&_svg]:hidden [&_svg]:size-3.5 lg:[&_svg]:block ${active ? "bg-ink text-primary-foreground shadow-sm" : "text-ink-soft hover:bg-secondary hover:text-ink"}`}>{children}</Link>;
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
@@ -122,9 +122,9 @@ function AuthPanel() {
       : { tone: "success", text: mode === "signup" && !result.data.session ? "Check your email to confirm your account." : "You’re signed in." });
   }
 
-  if (!ready) return <div className="h-64 animate-pulse rounded-md bg-muted" />;
+  if (!ready) return <div className="h-64 animate-pulse rounded-2xl bg-muted" />;
   if (session) return (
-    <div className="rounded-md border border-line bg-card p-5 shadow-sm">
+    <div className="rounded-2xl border border-line bg-card/85 p-6 shadow-xl shadow-ink/5 backdrop-blur-xl">
       <div className="flex items-center gap-3">
         <span className="grid size-10 place-items-center rounded-md bg-avail/15 text-avail"><CheckCircle2 className="size-5" /></span>
         <div><p className="font-semibold text-ink">Connected and ready</p><p className="text-sm text-ink-soft">{session.user.email}</p></div>
@@ -134,8 +134,8 @@ function AuthPanel() {
   );
 
   return (
-    <div className="rounded-md border border-line bg-card p-5 shadow-sm">
-      <div className="mb-4 flex items-center gap-2"><ShieldCheck className="size-5 text-brand" /><h2 className="font-display text-xl font-semibold">Member access</h2></div>
+    <div className="rounded-2xl border border-line bg-card/85 p-6 shadow-xl shadow-ink/5 backdrop-blur-xl lg:p-8">
+      <div className="mb-6 text-center"><span className="mx-auto mb-3 grid size-10 place-items-center rounded-xl bg-brand/10 text-brand"><ShieldCheck className="size-5" /></span><h2 className="font-display text-3xl font-normal">Welcome back</h2><p className="mt-1 text-sm text-ink-soft">Sign in to coordinate your response.</p></div>
       <Tabs defaultValue="signin">
         <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="signin">Sign in</TabsTrigger><TabsTrigger value="signup">Create account</TabsTrigger></TabsList>
         <TabsContent value="signin"><AuthForm mode="signin" busy={busy} notice={notice} onSubmit={(event) => void authenticate(event, "signin")} /></TabsContent>
@@ -167,17 +167,19 @@ export function HomePage() {
   return (
     <Shell>
       <main>
-        <section className="border-b border-line bg-card">
-          <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 lg:grid-cols-[1fr_360px] lg:px-8 lg:py-16">
-            <div className="animate-rise">
-              <div className="mb-5 inline-flex items-center gap-2 rounded border border-brand/20 bg-brand/10 px-3 py-1 font-mono text-xs uppercase text-brand-ink"><Activity className="size-3" /> 400 verified demo records connected</div>
-              <h1 className="max-w-3xl font-display text-5xl font-semibold leading-[1.05] text-ink md:text-7xl">A faster path from urgent need to nearby help.</h1>
-              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">BloodConnect coordinates compatible donors and emergency requests while keeping personal details protected.</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild size="lg"><Link to="/donors"><Search />Find donors</Link></Button>
-                <Button asChild size="lg" variant="outline"><Link to="/new-request"><HeartPulse />Create request</Link></Button>
+        <section className="relative overflow-hidden border-b border-line/70 bg-card">
+          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-secondary/60 lg:block" />
+          <div className="absolute -left-32 -top-40 size-96 rounded-full bg-brand/5 blur-3xl" />
+          <div className="relative mx-auto grid max-w-7xl gap-12 px-5 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-20">
+            <div className="animate-rise self-center">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase text-brand-ink"><Activity className="size-3" /> 400 verified donor records connected</div>
+              <h1 className="max-w-3xl font-display text-6xl font-normal leading-[0.98] text-ink md:text-7xl lg:text-8xl">Connecting <span className="italic text-brand">donors</span>,<br />saving lives.</h1>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">A private, dependable bridge between people who can help and families facing an urgent blood need.</p>
+              <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
+                <Button asChild size="lg" variant="outline" className="h-auto justify-start rounded-xl px-5 py-4 shadow-sm"><Link to="/profile"><HeartPulse className="text-brand" /><span className="text-left"><strong className="block">Become a donor</strong><span className="text-xs font-normal text-ink-soft">Keep your availability ready</span></span></Link></Button>
+                <Button asChild size="lg" className="h-auto justify-start rounded-xl bg-brand px-5 py-4 text-primary-foreground shadow-lg shadow-brand/20 hover:bg-brand-ink"><Link to="/donors"><Search /><span className="text-left"><strong className="block">Find blood</strong><span className="text-xs font-normal opacity-80">Search nearby matches</span></span></Link></Button>
               </div>
-              <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
+              <div className="mt-10 grid max-w-xl grid-cols-3 gap-3 border-t border-line pt-6">
                 <Stat icon={<Users />} value="400" label="demo donors" />
                 <Stat icon={<Clock3 />} value="90 days" label="eligibility check" />
                 <Stat icon={<ShieldCheck />} value="Private" label="contact sharing" />
@@ -186,7 +188,8 @@ export function HomePage() {
             <AuthPanel />
           </div>
         </section>
-        <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
+        <section className="mx-auto max-w-7xl px-5 py-12 lg:px-8 lg:py-16">
+          <div className="mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><p className="text-xs font-semibold uppercase text-brand">A coordinated response</p><h2 className="mt-2 font-display text-4xl font-normal text-ink">Everything needed to move quickly.</h2></div><p className="max-w-md text-sm leading-relaxed text-ink-soft">From a safe first search to a confirmed response, every step keeps sensitive details protected.</p></div>
           <div className="grid gap-4 md:grid-cols-3">
             <Feature icon={<Search />} title="Search safely" text="Filter nearby compatible donors without exposing names or phone numbers." to="/donors" />
             <Feature icon={<HeartPulse />} title="Raise an alert" text="Send essential request details to eligible donors around your location." to="/new-request" />
@@ -199,7 +202,7 @@ export function HomePage() {
 }
 
 function Feature({ icon, title, text, to }: { icon: ReactNode; title: string; text: string; to: "/donors" | "/new-request" | "/requests" }) {
-  return <article className="rounded-md border border-line bg-card p-5 shadow-sm"><span className="grid size-10 place-items-center rounded-md bg-brand/10 text-brand [&_svg]:size-5">{icon}</span><h2 className="mt-5 font-display text-2xl font-semibold">{title}</h2><p className="mt-2 text-sm leading-relaxed text-ink-soft">{text}</p><Button asChild variant="link" className="mt-3 px-0"><Link to={to}>Open page <ArrowRight /></Link></Button></article>;
+  return <article className="group rounded-xl border border-line bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-brand/30 hover:shadow-lg hover:shadow-brand/5"><span className="grid size-11 place-items-center rounded-xl bg-brand/10 text-brand transition-transform group-hover:scale-105 [&_svg]:size-5">{icon}</span><h2 className="mt-6 font-display text-3xl font-normal">{title}</h2><p className="mt-2 text-sm leading-relaxed text-ink-soft">{text}</p><Button asChild variant="link" className="mt-4 px-0 text-brand"><Link to={to}>Open page <ArrowRight /></Link></Button></article>;
 }
 
 export function DonorDesk() {
@@ -260,7 +263,7 @@ export function DonorDesk() {
 }
 
 function Stat({ icon, value, label }: { icon: ReactNode; value: string; label: string }) {
-  return <div className="border-l-2 border-brand pl-3"><span className="mb-2 block text-brand [&_svg]:size-4">{icon}</span><strong className="block text-sm text-ink">{value}</strong><span className="text-xs text-ink-soft">{label}</span></div>;
+  return <div className="min-w-0"><span className="mb-2 block text-brand [&_svg]:size-4">{icon}</span><strong className="block text-lg text-ink">{value}</strong><span className="block text-xs text-ink-soft">{label}</span></div>;
 }
 
 function DonorCard({ donor }: { donor: DonorResult }) {
@@ -341,7 +344,7 @@ export function ProfilePage() {
     if (!error && profile) setProfile({ ...profile, full_name, blood_group, city, area, phone, latitude, longitude, available, last_donation_date });
   }
 
-  return <Shell><main className="mx-auto max-w-6xl px-5 py-12 lg:px-8"><p className="font-mono text-xs uppercase text-brand">Member record</p><h1 className="mt-2 font-display text-5xl font-semibold">My profile</h1><p className="mt-3 max-w-xl text-ink-soft">Keep your donor details accurate so the network can find the right match.</p>{!ready ? <div className="mt-8 h-64 animate-pulse rounded-md bg-muted" /> : !session ? <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]"><Empty title="Sign in to manage your profile" text="Your private contact and donor details are stored securely." /><AuthPanel /></div> : !profile ? <div className="mt-8 h-64 animate-pulse rounded-md bg-muted" /> : <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_300px]"><form onSubmit={(event) => void save(event)} className="grid gap-5 rounded-md border border-line bg-card p-6 shadow-sm sm:grid-cols-2"><Field label="Full name"><Input name="full_name" defaultValue={profile.full_name} minLength={2} maxLength={80} required /></Field><Field label="Blood group"><Select name="blood_group" defaultValue={profile.blood_group ?? undefined}><SelectTrigger><SelectValue placeholder="Select blood group" /></SelectTrigger><SelectContent>{BLOOD_GROUPS.map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select></Field><Field label="Phone"><Input name="phone" type="tel" defaultValue={profile.phone} maxLength={20} required /></Field><Field label="Last donation"><Input name="last_donation_date" type="date" defaultValue={profile.last_donation_date ?? ""} /></Field><Field label="City"><Input name="city" defaultValue={profile.city} minLength={2} maxLength={80} required /></Field><Field label="Area"><Input name="area" defaultValue={profile.area} minLength={1} maxLength={120} required /></Field><Field label="Latitude"><Input name="latitude" type="number" step="any" min={-90} max={90} defaultValue={profile.latitude} required /></Field><Field label="Longitude"><Input name="longitude" type="number" step="any" min={-180} max={180} defaultValue={profile.longitude} required /></Field><label className="flex items-center gap-3 rounded-md border border-line bg-background p-4 sm:col-span-2"><input name="available" type="checkbox" defaultChecked={profile.available} className="size-4 accent-current" /><span><strong className="block text-sm text-ink">Available to donate</strong><span className="text-xs text-ink-soft">Include me in compatible donor searches</span></span></label><div className="sm:col-span-2"><NoticeBox notice={notice} /><Button className="mt-4 w-full" disabled={busy}><PencilLine />{busy ? "Saving…" : "Save profile"}</Button></div></form><aside className="h-fit rounded-md border border-line bg-primary p-5 text-primary-foreground"><ShieldCheck className="size-6" /><h2 className="mt-4 font-display text-2xl font-semibold">Protected details</h2><p className="mt-2 text-sm opacity-75">Your name and phone stay private until you accept a matching request.</p></aside></div>}</main></Shell>;
+  return <Shell><main className="mx-auto max-w-6xl px-5 py-12 lg:px-8"><p className="font-mono text-xs uppercase text-brand">Member record</p><h1 className="mt-2 font-display text-5xl font-semibold">My profile</h1><p className="mt-3 max-w-xl text-ink-soft">Keep your donor details accurate so the network can find the right match.</p>{!ready ? <div className="mt-8 h-64 animate-pulse rounded-md bg-muted" /> : !session ? <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]"><Empty title="Sign in to manage your profile" text="Your private contact and donor details are stored securely." /><AuthPanel /></div> : !profile ? <div className="mt-8 h-64 animate-pulse rounded-md bg-muted" /> : <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_300px]"><form onSubmit={(event) => void save(event)} className="grid gap-5 rounded-md border border-line bg-card p-6 shadow-sm sm:grid-cols-2"><Field label="Full name"><Input name="full_name" defaultValue={profile.full_name} minLength={2} maxLength={80} required /></Field><Field label="Blood group"><Select name="blood_group" defaultValue={profile.blood_group ?? "O+"}><SelectTrigger><SelectValue placeholder="Select blood group" /></SelectTrigger><SelectContent>{BLOOD_GROUPS.map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select></Field><Field label="Phone"><Input name="phone" type="tel" defaultValue={profile.phone} maxLength={20} required /></Field><Field label="Last donation"><Input name="last_donation_date" type="date" defaultValue={profile.last_donation_date ?? ""} /></Field><Field label="City"><Input name="city" defaultValue={profile.city} minLength={2} maxLength={80} required /></Field><Field label="Area"><Input name="area" defaultValue={profile.area} minLength={1} maxLength={120} required /></Field><Field label="Latitude"><Input name="latitude" type="number" step="any" min={-90} max={90} defaultValue={profile.latitude} required /></Field><Field label="Longitude"><Input name="longitude" type="number" step="any" min={-180} max={180} defaultValue={profile.longitude} required /></Field><label className="flex items-center gap-3 rounded-md border border-line bg-background p-4 sm:col-span-2"><input name="available" type="checkbox" defaultChecked={profile.available} className="size-4 accent-current" /><span><strong className="block text-sm text-ink">Available to donate</strong><span className="text-xs text-ink-soft">Include me in compatible donor searches</span></span></label><div className="sm:col-span-2"><NoticeBox notice={notice} /><Button className="mt-4 w-full" disabled={busy}><PencilLine />{busy ? "Saving…" : "Save profile"}</Button></div></form><aside className="h-fit rounded-md border border-line bg-primary p-5 text-primary-foreground"><ShieldCheck className="size-6" /><h2 className="mt-4 font-display text-2xl font-semibold">Protected details</h2><p className="mt-2 text-sm opacity-75">Your name and phone stay private until you accept a matching request.</p></aside></div>}</main></Shell>;
 }
 
 function RequestList({ items, empty }: { items: BloodRequest[]; empty: string }) {
