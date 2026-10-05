@@ -5,4 +5,4 @@
 - [x] Check the build and verify the signed-out experience and app navigation.
 - [x] Expand BloodConnect into Home, Find Donors, New Request, My Requests, and Profile pages.
 - [x] Import the uploaded 400-row demo donor database into the secure donor search network.
-- [ ] Verify all five pages and donor search behavior.
+- [x] Verify all five pages and signed-out donor search behavior.
