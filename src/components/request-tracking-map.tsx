@@ -28,6 +28,13 @@ function MapBounds({ items }: { items: BloodRequest[] }) {
     requestAnimationFrame(() => map.invalidateSize());
   }, [items, map]);
 
+  useEffect(() => {
+    const container = map.getContainer();
+    const observer = new ResizeObserver(() => map.invalidateSize());
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [map]);
+
   return null;
 }
 
