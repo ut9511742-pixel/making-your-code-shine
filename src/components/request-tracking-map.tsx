@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import L from "leaflet";
 import { Circle, MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -59,7 +59,7 @@ export function RequestTrackingMap({ items }: { items: BloodRequest[] }) {
             {locations.map((item) => {
               const position: [number, number] = [item.latitude, item.longitude];
               return (
-                <span key={item.id}>
+                <Fragment key={item.id}>
                   <Circle center={position} radius={item.radius_km * 1000} pathOptions={{ color: "var(--color-brand)", fillColor: "var(--color-brand)", fillOpacity: 0.1, weight: 2 }} />
                   <Marker position={position} icon={requestIcon}>
                     <Popup>
@@ -69,7 +69,7 @@ export function RequestTrackingMap({ items }: { items: BloodRequest[] }) {
                       <span className="capitalize">{item.status}</span>
                     </Popup>
                   </Marker>
-                </span>
+                </Fragment>
               );
             })}
           </MapContainer>
