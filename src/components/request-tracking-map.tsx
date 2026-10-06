@@ -16,11 +16,16 @@ function MapBounds({ items }: { items: BloodRequest[] }) {
   const map = useMap();
 
   useEffect(() => {
-    const points = items
-      .filter((item) => Number.isFinite(item.latitude) && Number.isFinite(item.longitude))
-      .map((item) => [item.latitude, item.longitude] as [number, number]);
-    if (points.length === 1) map.setView(points[0] ?? [22.7196, 75.8577], 12);
-    if (points.length > 1) map.fitBounds(L.latLngBounds(points), { padding: [36, 36], maxZoom: 12 });
+    const bounds = L.latLngBounds([]);
+    for (const item of items) {
+      if (!Number.isFinite(item.latitude) || !Number.isFinite(item.longitude)) continue;
+      const latOffset = item.radius_km / 111;
+      const lonOffset = item.radius_km / (111 * Math.max(Math.cos((item.latitude * Math.PI) / 180), 0.01));
+      bounds.extend([item.latitude - latOffset, item.longitude - lonOffset]);
+      bounds.extend([item.latitude + latOffset, item.longitude + lonOffset]);
+    }
+    if (bounds.isValid()) map.fitBounds(bounds, { padding: [36, 36], maxZoom: 12 });
+    requestAnimationFrame(() => map.invalidateSize());
   }, [items, map]);
 
   return null;
