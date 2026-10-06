@@ -11,3 +11,4 @@
 
 - BloodConnect uses one shared `src/components/bloodconnect.tsx` experience across its five public routes so auth and navigation remain consistent.
 - Imported donor records stay in the private `bloodconnect_private` schema and reach clients only through the pseudonymous search function, preventing raw identity and phone exposure.
+- Interactive maps load only in the browser and show request locations and coverage, never individual donor pins, to avoid server-render breakage and protect donors.
