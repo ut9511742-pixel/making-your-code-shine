@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ComponentType, type FormEvent, type ReactNode } from "react";
 import {
   Activity,
   ArrowRight,
@@ -348,8 +348,21 @@ export function ProfilePage() {
 }
 
 function RequestList({ items, empty }: { items: BloodRequest[]; empty: string }) {
-  if (!items.length) return <Empty title={empty} text="The network updates as new requests arrive." />;
-  return <div className="grid gap-3">{items.map((item) => <article key={item.id} className="grid gap-4 rounded-md border border-line bg-card p-5 shadow-sm sm:grid-cols-[80px_1fr_auto]"><span className="grid h-16 place-items-center rounded-md bg-brand/10 font-display text-2xl font-semibold text-brand">{item.blood_group}</span><div><div className="flex flex-wrap items-center gap-2"><h2 className="font-semibold text-ink">{item.hospital}</h2><span className="rounded bg-warn/15 px-2 py-0.5 text-xs font-medium uppercase text-ink">{item.urgency}</span></div><p className="mt-2 text-sm text-ink-soft"><MapPin className="mr-1 inline size-3.5" />{item.area}, {item.city} · {item.units} unit{item.units === 1 ? "" : "s"}</p></div><span className="font-mono text-xs uppercase text-ink-soft">{item.status}</span></article>)}</div>;
+  return <div className="space-y-5"><RequestMapBoundary items={items} />{!items.length ? <Empty title={empty} text="The network updates as new requests arrive." /> : <div className="grid gap-3">{items.map((item) => <article key={item.id} className="grid gap-4 rounded-md border border-line bg-card p-5 shadow-sm sm:grid-cols-[80px_1fr_auto]"><span className="grid h-16 place-items-center rounded-md bg-brand/10 font-display text-2xl font-semibold text-brand">{item.blood_group}</span><div><div className="flex flex-wrap items-center gap-2"><h2 className="font-semibold text-ink">{item.hospital}</h2><span className="rounded bg-warn/15 px-2 py-0.5 text-xs font-medium uppercase text-ink">{item.urgency}</span></div><p className="mt-2 text-sm text-ink-soft"><MapPin className="mr-1 inline size-3.5" />{item.area}, {item.city} · {item.units} unit{item.units === 1 ? "" : "s"}</p></div><span className="font-mono text-xs uppercase text-ink-soft">{item.status}</span></article>)}</div>}</div>;
+}
+
+function RequestMapBoundary({ items }: { items: BloodRequest[] }) {
+  const [MapComponent, setMapComponent] = useState<ComponentType<{ items: BloodRequest[] }> | null>(null);
+  useEffect(() => {
+    let active = true;
+    void import("./request-tracking-map").then(({ RequestTrackingMap }) => {
+      if (active) setMapComponent(() => RequestTrackingMap);
+    });
+    return () => { active = false; };
+  }, []);
+
+  if (!MapComponent) return <div className="h-72 animate-pulse rounded-md border border-line bg-muted" aria-label="Loading request map" />;
+  return <MapComponent items={items} />;
 }
 
 function Empty({ title, text }: { title: string; text: string }) {
