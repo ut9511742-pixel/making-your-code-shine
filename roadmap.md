@@ -7,3 +7,4 @@
 - [x] Import the uploaded 400-row demo donor database into the secure donor search network.
 - [x] Verify all five pages and signed-out donor search behavior.
 - [x] Add an interactive request-tracking map with radius circles while keeping donor locations private.
+- [ ] Add donor profile pages and separate donor-approved location requests; reveal exact member locations only to the approved requester.
