@@ -68,6 +68,51 @@ export type Database = {
         }
         Relationships: []
       }
+      location_requests: {
+        Row: {
+          blood_request_id: string
+          created_at: string
+          donor_id: string
+          id: string
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          blood_request_id: string
+          created_at?: string
+          donor_id: string
+          id?: string
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          blood_request_id?: string
+          created_at?: string
+          donor_id?: string
+          id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "location_requests_blood_request_id_fkey"
+            columns: ["blood_request_id"]
+            isOneToOne: false
+            referencedRelation: "blood_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "location_requests_donor_id_fkey"
+            columns: ["donor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           area: string
@@ -168,6 +213,71 @@ export type Database = {
         Args: { donor_group: string; recipient_group: string }
         Returns: boolean
       }
+      get_approved_donor_location: {
+        Args: { target_location_request_id: string }
+        Returns: {
+          latitude: number
+          longitude: number
+        }[]
+      }
+      get_donor_profile: {
+        Args: {
+          donor_reference: string
+          search_blood_group: string
+          search_radius_km: number
+        }
+        Returns: {
+          area: string
+          available: boolean
+          blood_group: string
+          city: string
+          days_since_donation: number
+          distance_km: number
+          donor_initials: string
+          eligible: boolean
+          is_demo: boolean
+        }[]
+      }
+      list_incoming_location_requests: {
+        Args: never
+        Returns: {
+          created_at: string
+          hospital: string
+          location_request_id: string
+          note: string
+          request_blood_group: string
+          requester_area: string
+          requester_city: string
+          requester_name: string
+          status: string
+          units: number
+          urgency: string
+        }[]
+      }
+      list_my_location_requests: {
+        Args: never
+        Returns: {
+          area: string
+          blood_group: string
+          city: string
+          created_at: string
+          donor_reference: string
+          hospital: string
+          location_request_id: string
+          request_blood_group: string
+          status: string
+          units: number
+          urgency: string
+        }[]
+      }
+      request_donor_location: {
+        Args: { target_blood_request_id: string; target_donor_id: string }
+        Returns: string
+      }
+      respond_to_location_request: {
+        Args: { approve: boolean; target_location_request_id: string }
+        Returns: string
+      }
       search_donors: {
         Args: {
           search_blood_group: string
@@ -184,6 +294,27 @@ export type Database = {
           days_since_donation: number
           distance_km: number
           donor_initials: string
+        }[]
+      }
+      search_donors_with_ids: {
+        Args: {
+          search_blood_group: string
+          search_city: string
+          search_latitude: number
+          search_longitude: number
+          search_radius_km: number
+        }
+        Returns: {
+          area: string
+          available: boolean
+          blood_group: string
+          city: string
+          days_since_donation: number
+          distance_km: number
+          donor_initials: string
+          donor_reference: string
+          eligible: boolean
+          is_demo: boolean
         }[]
       }
     }
