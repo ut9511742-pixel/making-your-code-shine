@@ -56,7 +56,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   return (
     <div className="min-h-screen bg-canvas">
-      <header className="sticky top-0 z-40 border-b border-line/70 bg-canvas/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-line bg-card/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-8 lg:py-5">
           <Brand />
           <nav className="grid w-full grid-cols-5 gap-1 rounded-xl border border-line bg-card/80 p-1 shadow-sm sm:w-auto" aria-label="Main navigation">
@@ -69,7 +69,7 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
       </header>
       {children}
-      <footer className="border-t border-line bg-card">
+      <footer className="border-t border-trust/15 bg-trust-soft/50">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <p className="text-sm text-ink-soft">BloodConnect · Care starts with community.</p>
           <nav aria-label="Donation guidance and legal" className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
@@ -83,7 +83,7 @@ export function Shell({ children }: { children: ReactNode }) {
 }
 
 function NavLink({ to, active, children }: { to: "/" | "/donors" | "/new-request" | "/requests" | "/profile"; active: boolean; children: ReactNode }) {
-  return <Link to={to} className={`flex min-w-0 items-center justify-center gap-1 rounded-lg px-2 py-2 text-center text-xs font-medium transition-all sm:px-3 sm:text-sm [&_svg]:hidden [&_svg]:size-3.5 lg:[&_svg]:block ${active ? "bg-ink text-primary-foreground shadow-sm" : "text-ink-soft hover:bg-secondary hover:text-ink"}`}>{children}</Link>;
+  return <Link to={to} className={`flex min-w-0 items-center justify-center gap-1 rounded-lg px-2 py-2 text-center text-xs font-medium transition-all sm:px-3 sm:text-sm [&_svg]:hidden [&_svg]:size-3.5 lg:[&_svg]:block ${active ? "bg-trust text-primary-foreground shadow-sm" : "text-ink-soft hover:bg-secondary hover:text-trust"}`}>{children}</Link>;
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
@@ -143,8 +143,8 @@ function AuthPanel() {
   );
 
   return (
-    <div className="rounded-2xl border border-line bg-card/85 p-6 shadow-xl shadow-ink/5 backdrop-blur-xl lg:p-8">
-      <div className="mb-6 text-center"><span className="mx-auto mb-3 grid size-10 place-items-center rounded-xl bg-brand/10 text-brand"><ShieldCheck className="size-5" /></span><h2 className="font-display text-3xl font-normal">Welcome back</h2><p className="mt-1 text-sm text-ink-soft">Sign in to coordinate your response.</p></div>
+    <div className="rounded-lg border border-trust/15 border-t-4 border-t-trust bg-card p-6 shadow-xl shadow-trust/10 lg:p-8">
+      <div className="mb-6 text-center"><span className="mx-auto mb-3 grid size-10 place-items-center rounded-lg bg-trust-soft text-trust"><ShieldCheck className="size-5" /></span><h2 className="font-display text-3xl font-normal">Welcome back</h2><p className="mt-1 text-sm text-ink-soft">Sign in to coordinate your response.</p></div>
       <Tabs defaultValue="signin">
         <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="signin">Sign in</TabsTrigger><TabsTrigger value="signup">Create account</TabsTrigger></TabsList>
         <TabsContent value="signin"><AuthForm mode="signin" busy={busy} notice={notice} onSubmit={(event) => void authenticate(event, "signin")} /></TabsContent>
@@ -177,15 +177,14 @@ export function HomePage() {
     <Shell>
       <main>
         <section className="relative overflow-hidden border-b border-line/70 bg-card">
-          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-secondary/60 lg:block" />
-          <div className="absolute -left-32 -top-40 size-96 rounded-full bg-brand/5 blur-3xl" />
+          <div className="absolute inset-y-0 right-0 hidden w-[42%] border-l border-trust/10 bg-trust-soft lg:block" />
           <div className="relative mx-auto grid max-w-7xl gap-12 px-5 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-20">
             <div className="animate-rise self-center">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase text-brand-ink"><Activity className="size-3" /> 400 verified donor records connected</div>
-              <h1 className="max-w-3xl font-display text-6xl font-normal leading-[0.98] text-ink md:text-7xl lg:text-8xl">Connecting <span className="italic text-brand">donors</span>,<br />saving lives.</h1>
+              <h1 className="max-w-3xl font-display text-6xl font-normal leading-[0.98] text-ink md:text-7xl lg:text-8xl">Connecting <span className="italic text-brand">donors</span>,<br /><span className="text-trust">saving lives.</span></h1>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">A private, dependable bridge between people who can help and families facing an urgent blood need.</p>
               <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
-                <Button asChild size="lg" variant="outline" className="h-auto justify-start rounded-xl px-5 py-4 shadow-sm"><Link to="/profile"><HeartPulse className="text-brand" /><span className="text-left"><strong className="block">Become a donor</strong><span className="text-xs font-normal text-ink-soft">Keep your availability ready</span></span></Link></Button>
+                <Button asChild size="lg" variant="outline" className="h-auto justify-start rounded-lg border-trust/25 bg-trust-soft/50 px-5 py-4 text-trust shadow-sm hover:bg-trust-soft"><Link to="/profile"><HeartPulse /><span className="text-left"><strong className="block">Become a donor</strong><span className="text-xs font-normal text-ink-soft">Keep your availability ready</span></span></Link></Button>
                 <Button asChild size="lg" className="h-auto justify-start rounded-xl bg-brand px-5 py-4 text-primary-foreground shadow-lg shadow-brand/20 hover:bg-brand-ink"><Link to="/donors"><Search /><span className="text-left"><strong className="block">Find blood</strong><span className="text-xs font-normal opacity-80">Search nearby matches</span></span></Link></Button>
               </div>
               <Button asChild variant="link" className="mt-3 h-auto whitespace-normal px-0 text-brand"><Link to="/eligibility">Can I donate blood? View eligibility criteria <ArrowRight /></Link></Button>
@@ -212,7 +211,8 @@ export function HomePage() {
 }
 
 function Feature({ icon, title, text, to }: { icon: ReactNode; title: string; text: string; to: "/donors" | "/new-request" | "/requests" }) {
-  return <article className="group rounded-xl border border-line bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-brand/30 hover:shadow-lg hover:shadow-brand/5"><span className="grid size-11 place-items-center rounded-xl bg-brand/10 text-brand transition-transform group-hover:scale-105 [&_svg]:size-5">{icon}</span><h2 className="mt-6 font-display text-3xl font-normal">{title}</h2><p className="mt-2 text-sm leading-relaxed text-ink-soft">{text}</p><Button asChild variant="link" className="mt-4 px-0 text-brand"><Link to={to}>Open page <ArrowRight /></Link></Button></article>;
+  const urgent = to === "/new-request";
+  return <article className={`group rounded-lg border border-line border-t-4 bg-card p-6 shadow-sm transition-all motion-safe:hover:-translate-y-1 hover:shadow-lg ${urgent ? "border-t-brand hover:shadow-brand/10" : "border-t-trust hover:shadow-trust/10"}`}><span className={`grid size-11 place-items-center rounded-lg [&_svg]:size-5 ${urgent ? "bg-brand/10 text-brand" : "bg-trust-soft text-trust"}`}>{icon}</span><h2 className="mt-6 font-display text-3xl font-normal">{title}</h2><p className="mt-2 text-sm leading-relaxed text-ink-soft">{text}</p><Button asChild variant="link" className={`mt-4 px-0 ${urgent ? "text-brand" : "text-trust"}`}><Link to={to}>Open page <ArrowRight /></Link></Button></article>;
 }
 
 export function DonorDesk() {

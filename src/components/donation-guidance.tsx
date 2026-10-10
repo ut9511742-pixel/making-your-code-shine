@@ -27,8 +27,8 @@ export function EligibilityPage() {
       <div className="mx-auto max-w-6xl px-5 py-10 lg:px-8 lg:py-12">
         <h2 className="font-display text-3xl text-ink">The starting criteria</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {criteria.map(({ icon: Icon, title, value, text }) => <article key={title} className="rounded-lg border border-line bg-card p-5">
-            <Icon className="size-5 text-avail" />
+          {criteria.map(({ icon: Icon, title, value, text }, index) => <article key={title} className={`rounded-lg border border-line border-t-4 bg-card p-5 ${index % 2 === 0 ? "border-t-trust" : "border-t-brand"}`}>
+            <Icon className={`size-5 ${index % 2 === 0 ? "text-trust" : "text-brand"}`} />
             <h3 className="mt-5 text-sm font-medium text-ink-soft">{title}</h3>
             <p className="mt-1 font-display text-3xl text-ink">{value}</p>
             <p className="mt-3 text-sm leading-relaxed text-ink-soft">{text}</p>
