@@ -36,6 +36,10 @@ type DonorResult = {
   city: string;
   distance_km: number;
   donor_initials: string;
+  donor_reference: string;
+  days_since_donation: number | null;
+  eligible: boolean;
+  is_demo: boolean;
 };
 
 function Brand() {
@@ -56,7 +60,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   return (
     <div className="min-h-screen bg-canvas">
-      <header className="sticky top-0 z-40 border-b border-line bg-card/95 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-line/80 bg-card/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-8 lg:py-5">
           <Brand />
           <nav className="grid w-full grid-cols-5 gap-1 rounded-xl border border-line bg-card/80 p-1 shadow-sm sm:w-auto" aria-label="Main navigation">
@@ -167,37 +171,46 @@ function AuthForm({ mode, busy, notice, onSubmit }: { mode: "signin" | "signup";
 }
 
 const demoDonors: DonorResult[] = [
-  { donor_initials: "PN", blood_group: "O-", city: "Indore", area: "Vijay Nagar", distance_km: 2.4, available: true },
-  { donor_initials: "AS", blood_group: "O+", city: "Indore", area: "Palasia", distance_km: 4.1, available: true },
-  { donor_initials: "SK", blood_group: "A+", city: "Indore", area: "Bhawarkua", distance_km: 7.8, available: true },
+  { donor_reference: "demo:pn", donor_initials: "PN", blood_group: "O-", city: "Indore", area: "Vijay Nagar", distance_km: 2.4, available: true, days_since_donation: null, eligible: true, is_demo: true },
+  { donor_reference: "demo:as", donor_initials: "AS", blood_group: "O+", city: "Indore", area: "Palasia", distance_km: 4.1, available: true, days_since_donation: null, eligible: true, is_demo: true },
+  { donor_reference: "demo:sk", donor_initials: "SK", blood_group: "A+", city: "Indore", area: "Bhawarkua", distance_km: 7.8, available: true, days_since_donation: null, eligible: true, is_demo: true },
 ];
 
 export function HomePage() {
   return (
     <Shell>
       <main>
-        <section className="relative overflow-hidden border-b border-line/70 bg-card">
-          <div className="absolute inset-y-0 right-0 hidden w-[42%] border-l border-trust/10 bg-trust-soft lg:block" />
+        <section className="home-hero relative overflow-hidden border-b border-line/70">
+          <div className="hero-orbit hidden lg:block" aria-hidden="true" />
           <div className="relative mx-auto grid max-w-7xl gap-12 px-5 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-20">
             <div className="animate-rise self-center">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase text-brand-ink"><Activity className="size-3" /> 400 verified donor records connected</div>
-              <h1 className="max-w-3xl font-display text-6xl font-normal leading-[0.98] text-ink md:text-7xl lg:text-8xl">Connecting <span className="italic text-brand">donors</span>,<br /><span className="text-trust">saving lives.</span></h1>
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-brand-ink shadow-sm"><Activity className="size-3" /> 400 verified donor records connected</div>
+              <h1 className="max-w-3xl font-display text-6xl font-normal leading-[0.94] tracking-tight text-ink md:text-7xl lg:text-8xl">Connecting <span className="italic text-brand">donors</span>,<br /><span className="text-trust">saving lives.</span></h1>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">A private, dependable bridge between people who can help and families facing an urgent blood need.</p>
               <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
-                <Button asChild size="lg" variant="outline" className="h-auto justify-start rounded-lg border-trust/25 bg-trust-soft/50 px-5 py-4 text-trust shadow-sm hover:bg-trust-soft"><Link to="/profile"><HeartPulse /><span className="text-left"><strong className="block">Become a donor</strong><span className="text-xs font-normal text-ink-soft">Keep your availability ready</span></span></Link></Button>
-                <Button asChild size="lg" className="h-auto justify-start rounded-xl bg-brand px-5 py-4 text-primary-foreground shadow-lg shadow-brand/20 hover:bg-brand-ink"><Link to="/donors"><Search /><span className="text-left"><strong className="block">Find blood</strong><span className="text-xs font-normal opacity-80">Search nearby matches</span></span></Link></Button>
+                <Button asChild size="lg" variant="outline" className="h-auto justify-start rounded-xl border-trust/25 bg-card/70 px-5 py-4 text-trust shadow-sm backdrop-blur hover:bg-trust-soft"><Link to="/profile"><HeartPulse /><span className="text-left"><strong className="block">Become a donor</strong><span className="text-xs font-normal text-ink-soft">Keep your availability ready</span></span></Link></Button>
+                <Button asChild size="lg" className="h-auto justify-start rounded-xl bg-brand px-5 py-4 text-primary-foreground shadow-lg shadow-brand/25 hover:bg-brand-ink"><Link to="/donors"><Search /><span className="text-left"><strong className="block">Find blood</strong><span className="text-xs font-normal opacity-80">Search nearby matches</span></span></Link></Button>
               </div>
               <Button asChild variant="link" className="mt-3 h-auto whitespace-normal px-0 text-brand"><Link to="/eligibility">Can I donate blood? View eligibility criteria <ArrowRight /></Link></Button>
-              <div className="mt-10 grid max-w-xl grid-cols-3 gap-3 border-t border-line pt-6">
+              <div className="mt-10 grid max-w-xl grid-cols-3 gap-3 border-t border-line/80 pt-6">
                 <Stat icon={<Users />} value="400" label="demo donors" />
                 <Stat icon={<Clock3 />} value="90 days" label="eligibility check" />
                 <Stat icon={<ShieldCheck />} value="Private" label="contact sharing" />
               </div>
             </div>
-            <AuthPanel />
+            <div className="animate-rise flex flex-col justify-center gap-4" style={{ animationDelay: "90ms" }}>
+              <AuthPanel />
+              <div className="impact-card relative overflow-hidden rounded-2xl p-5 text-primary-foreground">
+                <div className="absolute -right-8 -top-10 size-32 rounded-full border border-white/15" aria-hidden="true" />
+                <div className="relative flex items-start gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/15"><HeartPulse className="size-5" /></span>
+                  <div><p className="text-sm font-semibold">Small action. Big impact.</p><p className="mt-1 text-xs leading-relaxed text-white/75">One verified donor can be the missing link in someone’s emergency.</p></div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
-        <section className="mx-auto max-w-7xl px-5 py-12 lg:px-8 lg:py-16">
+        <section className="soft-grid mx-auto max-w-7xl px-5 py-12 lg:px-8 lg:py-16">
           <div className="mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><p className="text-xs font-semibold uppercase text-brand">A coordinated response</p><h2 className="mt-2 font-display text-4xl font-normal text-ink">Everything needed to move quickly.</h2></div><p className="max-w-md text-sm leading-relaxed text-ink-soft">From a safe first search to a confirmed response, every step keeps sensitive details protected.</p></div>
           <div className="grid gap-4 md:grid-cols-3">
             <Feature icon={<Search />} title="Search safely" text="Filter nearby compatible donors without exposing names or phone numbers." to="/donors" />
@@ -227,7 +240,7 @@ export function DonorDesk() {
     if (!session) { setNotice({ tone: "error", text: "Sign in to search the live donor network." }); return; }
     const { data: profile } = await supabase.from("profiles").select("city,latitude,longitude").eq("user_id", session.user.id).maybeSingle();
     if (!profile) { setNotice({ tone: "error", text: "Complete your member profile before searching." }); return; }
-    const { data, error } = await supabase.rpc("search_donors", { search_blood_group: group, search_city: profile.city, search_latitude: profile.latitude, search_longitude: profile.longitude, search_radius_km: Number(radius) });
+    const { data, error } = await supabase.rpc("search_donors_with_ids", { search_blood_group: group, search_city: profile.city, search_latitude: profile.latitude, search_longitude: profile.longitude, search_radius_km: Number(radius) });
     if (error) setNotice({ tone: "error", text: error.message });
     else { setDonors(data ?? []); setNotice({ tone: "success", text: `${data?.length ?? 0} compatible donors found.` }); }
   }
@@ -263,7 +276,7 @@ export function DonorDesk() {
             </form>
             <div>
               <div className="mb-4 flex items-end justify-between"><div><p className="font-mono text-xs uppercase text-ink-soft">Nearest first</p><h2 className="font-display text-3xl font-semibold">Available donors</h2></div><span className="text-sm text-ink-soft">{donors.length} matches</span></div>
-              <div className="grid gap-3">{donors.map((donor, index) => <DonorCard key={`${donor.donor_initials}-${index}`} donor={donor} />)}</div>
+              <div className="grid gap-3">{donors.map((donor, index) => <DonorCard key={`${donor.donor_reference}-${index}`} donor={donor} group={group} radius={radius} />)}</div>
             </div>
           </div>
         </section>
@@ -276,8 +289,105 @@ function Stat({ icon, value, label }: { icon: ReactNode; value: string; label: s
   return <div className="min-w-0"><span className="mb-2 block text-brand [&_svg]:size-4">{icon}</span><strong className="block text-lg text-ink">{value}</strong><span className="block text-xs text-ink-soft">{label}</span></div>;
 }
 
-function DonorCard({ donor }: { donor: DonorResult }) {
-  return <article className="grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-md border border-line bg-card p-4 shadow-sm transition-transform hover:-translate-y-0.5"><span className="grid size-12 place-items-center rounded-md bg-blood-o/15 font-display text-lg font-semibold text-blood-o">{donor.donor_initials}</span><div><div className="flex items-center gap-2"><strong className="text-lg text-ink">Blood group {donor.blood_group}</strong><span className="rounded bg-avail/15 px-2 py-0.5 text-xs font-medium text-avail">Available</span></div><p className="mt-1 flex items-center gap-1 text-sm text-ink-soft"><MapPin className="size-3.5" /> {donor.area}, {donor.city}</p></div><div className="text-right"><strong className="font-mono text-sm text-ink">{donor.distance_km.toFixed(1)} km</strong><p className="text-xs text-ink-soft">away</p></div></article>;
+function DonorCard({ donor, group, radius }: { donor: DonorResult; group: BloodGroup; radius: string }) {
+  return <Link to="/donors/$donorReference" params={{ donorReference: donor.donor_reference }} search={{ group, radius: Number(radius) }} className="group grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-md border border-line bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-trust/40 hover:shadow-lg hover:shadow-trust/10"><span className="grid size-12 place-items-center rounded-md bg-blood-o/15 font-display text-lg font-semibold text-blood-o">{donor.donor_initials}</span><div><div className="flex items-center gap-2"><strong className="text-lg text-ink group-hover:text-trust">Blood group {donor.blood_group}</strong><span className="rounded bg-avail/15 px-2 py-0.5 text-xs font-medium text-avail">Available</span></div><p className="mt-1 flex items-center gap-1 text-sm text-ink-soft"><MapPin className="size-3.5" /> {donor.area}, {donor.city}</p><p className="mt-1 text-xs font-medium text-trust">View donor details <ArrowRight className="ml-1 inline size-3" /></p></div><div className="text-right"><strong className="font-mono text-sm text-ink">{donor.distance_km.toFixed(1)} km</strong><p className="text-xs text-ink-soft">away</p></div></Link>;
+}
+
+type DonorProfileData = {
+  donor_initials: string;
+  blood_group: BloodGroup;
+  area: string;
+  city: string;
+  distance_km: number;
+  days_since_donation: number | null;
+  available: boolean;
+  eligible: boolean;
+  is_demo: boolean;
+};
+
+export function DonorProfilePage({ donorReference, group, radius }: { donorReference: string; group: BloodGroup; radius: number }) {
+  const { session, ready } = useSession();
+  const [profile, setProfile] = useState<DonorProfileData | null>(null);
+  const [requests, setRequests] = useState<Array<Pick<BloodRequest, "id" | "blood_group" | "hospital" | "urgency" | "created_at">>>([]);
+  const [selectedRequest, setSelectedRequest] = useState("");
+  const [notice, setNotice] = useState<Notice>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!session) return;
+    void supabase.rpc("get_donor_profile", { donor_reference: donorReference, search_blood_group: group, search_radius_km: radius }).then(({ data, error }) => {
+      if (error) setNotice({ tone: "error", text: error.message });
+      else setProfile((data?.[0] ?? null) as DonorProfileData | null);
+    });
+    void supabase.from("blood_requests").select("id,blood_group,hospital,urgency,created_at").eq("requester_id", session.user.id).eq("status", "open").order("created_at", { ascending: false }).then(({ data, error }) => {
+      if (error) setNotice({ tone: "error", text: error.message });
+      else setRequests((data ?? []) as typeof requests);
+    });
+  }, [donorReference, group, radius, session]);
+
+  async function requestDonor() {
+    if (!session) { setNotice({ tone: "error", text: "Sign in before requesting donor approval." }); return; }
+    if (donorReference.startsWith("demo:")) { setNotice({ tone: "error", text: "Demo donors are for preview only. Search the live network after completing your profile." }); return; }
+    if (!selectedRequest) { setNotice({ tone: "error", text: "Choose one of your open blood requests first." }); return; }
+    setBusy(true); setNotice(null);
+    const targetDonorId = donorReference.replace(/^profile:/, "");
+    const { error } = await supabase.rpc("request_donor_location", { target_donor_id: targetDonorId, target_blood_request_id: selectedRequest });
+    setBusy(false);
+    setNotice(error ? { tone: "error", text: error.message } : { tone: "success", text: "Request sent. The donor can now accept or reject it." });
+  }
+
+  return <Shell><main className="mx-auto max-w-5xl px-5 py-12 lg:px-8"><Link to="/donors" className="inline-flex items-center gap-2 text-sm font-medium text-trust hover:underline"><ArrowRight className="rotate-180 size-4" /> Back to available donors</Link>{!ready ? <div className="mt-8 h-72 animate-pulse rounded-2xl bg-muted" /> : !session ? <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]"><Empty title="Sign in to view donor details" text="Donor details and request actions are protected for members." /><AuthPanel /></div> : !profile ? <div className="mt-8 rounded-2xl border border-dashed border-line bg-card px-6 py-14 text-center"><Droplets className="mx-auto size-8 text-brand" /><h1 className="mt-4 font-display text-3xl">Donor details unavailable</h1><p className="mt-2 text-sm text-ink-soft">This donor may no longer be available or compatible with your request.</p><NoticeBox notice={notice} /></div> : <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_340px]"><div className="rounded-2xl border border-line bg-card p-7 shadow-sm"><div className="flex flex-wrap items-start gap-5"><span className="grid size-20 place-items-center rounded-2xl bg-blood-o/15 font-display text-3xl font-semibold text-blood-o">{profile.donor_initials}</span><div><p className="font-mono text-xs uppercase tracking-[0.16em] text-brand">Verified donor profile</p><h1 className="mt-2 font-display text-5xl font-normal">{profile.donor_initials} · BloodConnect donor</h1><p className="mt-2 flex items-center gap-1 text-sm text-ink-soft"><MapPin className="size-4" /> {profile.area}, {profile.city} · {profile.distance_km.toFixed(1)} km away</p></div></div><div className="mt-8 grid gap-3 sm:grid-cols-3"><div className="rounded-xl bg-trust-soft p-4"><p className="text-xs uppercase text-ink-soft">Blood group</p><strong className="mt-1 block text-2xl text-trust">{profile.blood_group}</strong></div><div className="rounded-xl bg-avail/10 p-4"><p className="text-xs uppercase text-ink-soft">Availability</p><strong className="mt-1 block text-lg text-avail">{profile.available ? "Available now" : "Unavailable"}</strong></div><div className="rounded-xl bg-brand/10 p-4"><p className="text-xs uppercase text-ink-soft">Eligibility</p><strong className="mt-1 block text-lg text-brand-ink">{profile.eligible ? "Eligible" : "Check needed"}</strong></div></div><p className="mt-6 text-sm leading-7 text-ink-soft">Last donation: {profile.days_since_donation == null ? "Not provided" : `${profile.days_since_donation} days ago`}. Contact details remain private until the donor approves your request.</p></div><aside className="h-fit rounded-2xl border border-trust/20 bg-trust-soft/60 p-6"><h2 className="font-display text-3xl">Request this donor</h2><p className="mt-2 text-sm leading-relaxed text-ink-soft">Choose an open blood request to send this donor an approval request.</p>{profile.is_demo ? <p className="mt-5 rounded-lg bg-brand/10 p-3 text-sm text-brand-ink">This is preview data. Live donor requests are available after signing in and searching your local network.</p> : <div className="mt-5 space-y-4"><Field label="Open blood request"><Select value={selectedRequest} onValueChange={setSelectedRequest}><SelectTrigger><SelectValue placeholder={requests.length ? "Choose a request" : "No open requests"} /></SelectTrigger><SelectContent>{requests.map((request) => <SelectItem key={request.id} value={request.id}>{request.blood_group} · {request.hospital} · {request.urgency}</SelectItem>)}</SelectContent></Select></Field><NoticeBox notice={notice} /><Button className="w-full" disabled={busy || !requests.length} onClick={() => void requestDonor()}><HeartPulse /> {busy ? "Sending…" : "Request donor approval"}</Button><Link to="/new-request" className="block text-center text-sm font-medium text-trust hover:underline">Create a new blood request</Link></div>}</aside></section>}</main></Shell>;
+}
+
+type LocationRequest = {
+  location_request_id: string;
+  donor_reference?: string;
+  requester_name?: string;
+  requester_city?: string;
+  requester_area?: string;
+  blood_group?: string;
+  request_blood_group: string;
+  city?: string;
+  area?: string;
+  status: string;
+  units: number;
+  hospital: string;
+  urgency: string;
+  note?: string;
+  created_at: string;
+};
+
+function ApprovalRequests({ session }: { session: Session }) {
+  const [outgoing, setOutgoing] = useState<LocationRequest[]>([]);
+  const [incoming, setIncoming] = useState<LocationRequest[]>([]);
+  const [notice, setNotice] = useState<Notice>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function load() {
+    const [outgoingResult, incomingResult] = await Promise.all([
+      supabase.rpc("list_my_location_requests"),
+      supabase.rpc("list_incoming_location_requests"),
+    ]);
+    if (outgoingResult.error || incomingResult.error) setNotice({ tone: "error", text: outgoingResult.error?.message ?? incomingResult.error?.message ?? "Could not load approval requests." });
+    setOutgoing((outgoingResult.data ?? []) as LocationRequest[]);
+    setIncoming((incomingResult.data ?? []) as LocationRequest[]);
+  }
+
+  useEffect(() => { void load(); }, [session]);
+
+  async function respond(id: string, approve: boolean) {
+    setBusyId(id); setNotice(null);
+    const { error } = await supabase.rpc("respond_to_location_request", { target_location_request_id: id, approve });
+    setBusyId(null);
+    setNotice(error ? { tone: "error", text: error.message } : { tone: "success", text: `Request ${approve ? "accepted" : "rejected"}.` });
+    if (!error) await load();
+  }
+
+  return <section className="mt-8 grid gap-6 lg:grid-cols-2"><div><div className="mb-4 flex items-end justify-between"><div><p className="font-mono text-xs uppercase text-brand">Selected donor requests</p><h2 className="font-display text-3xl">Requests I sent</h2></div><span className="text-sm text-ink-soft">{outgoing.length}</span></div><div className="space-y-3">{outgoing.length ? outgoing.map((item) => <article key={item.location_request_id} className="rounded-xl border border-line bg-card p-5 shadow-sm"><div className="flex items-start justify-between gap-3"><div><h3 className="font-semibold text-ink">{item.request_blood_group} · {item.hospital}</h3><p className="mt-1 text-sm text-ink-soft">Donor {item.donor_reference?.replace("profile:", "")?.slice(0, 8) ?? "selected"} · {item.units} unit{item.units === 1 ? "" : "s"}</p></div><StatusBadge status={item.status} /></div></article>) : <Empty title="No donor approvals yet" text="Open a donor profile to send a request." />}</div></div><div><div className="mb-4 flex items-end justify-between"><div><p className="font-mono text-xs uppercase text-brand">Incoming approvals</p><h2 className="font-display text-3xl">Requests for me</h2></div><span className="text-sm text-ink-soft">{incoming.length}</span></div><div className="space-y-3">{incoming.length ? incoming.map((item) => <article key={item.location_request_id} className="rounded-xl border border-line bg-card p-5 shadow-sm"><div className="flex items-start justify-between gap-3"><div><h3 className="font-semibold text-ink">{item.request_blood_group} · {item.hospital}</h3><p className="mt-1 text-sm text-ink-soft">{item.requester_name} · {item.requester_area}, {item.requester_city} · {item.units} unit{item.units === 1 ? "" : "s"}</p><p className="mt-2 text-xs text-ink-soft">{item.note || "No extra note provided."}</p></div><StatusBadge status={item.status} /></div>{item.status === "pending" && <div className="mt-4 flex gap-2"><Button size="sm" onClick={() => void respond(item.location_request_id, true)} disabled={busyId === item.location_request_id}>Accept</Button><Button size="sm" variant="outline" onClick={() => void respond(item.location_request_id, false)} disabled={busyId === item.location_request_id}>Reject</Button></div>}</article>) : <Empty title="No incoming requests" text="Matching approval requests will appear here." />}</div></div><div className="lg:col-span-2"><NoticeBox notice={notice} /></div></section>;
+}
+
+function StatusBadge({ status }: { status: string }) {
+  return <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${status === "approved" ? "bg-avail/15 text-avail" : status === "rejected" ? "bg-brand/10 text-brand-ink" : "bg-warn/15 text-ink"}`}>{status}</span>;
 }
 
 export function NewRequestPage() {
@@ -314,7 +424,7 @@ export function RequestsPage() {
   }, [session]);
   const outgoing = useMemo(() => requests.filter((item) => item.requester_id === session?.user.id), [requests, session]);
   const incoming = useMemo(() => requests.filter((item) => item.requester_id !== session?.user.id), [requests, session]);
-  return <Shell><main className="mx-auto max-w-6xl px-5 py-12 lg:px-8"><p className="font-mono text-xs uppercase text-brand">Response desk</p><h1 className="mt-2 font-display text-5xl font-semibold">My requests</h1><p className="mt-3 text-ink-soft">Track requests you created and nearby requests where you can help.</p>{!ready ? <div className="mt-8 h-48 animate-pulse rounded-md bg-muted" /> : !session ? <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]"><Empty title="Sign in to view your request desk" text="Your outgoing and incoming requests will appear here." /><AuthPanel /></div> : <Tabs defaultValue="outgoing" className="mt-8"><TabsList><TabsTrigger value="outgoing">Outgoing ({outgoing.length})</TabsTrigger><TabsTrigger value="incoming">Can help ({incoming.length})</TabsTrigger></TabsList><TabsContent value="outgoing" className="mt-5"><RequestList items={outgoing} empty="You haven’t created a request yet." /></TabsContent><TabsContent value="incoming" className="mt-5"><RequestList items={incoming} empty="No compatible requests are nearby right now." /></TabsContent></Tabs>}</main></Shell>;
+  return <Shell><main className="mx-auto max-w-6xl px-5 py-12 lg:px-8"><p className="font-mono text-xs uppercase text-brand">Response desk</p><h1 className="mt-2 font-display text-5xl font-semibold">My requests</h1><p className="mt-3 text-ink-soft">Track requests you created and nearby requests where you can help.</p>{!ready ? <div className="mt-8 h-48 animate-pulse rounded-md bg-muted" /> : !session ? <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]"><Empty title="Sign in to view your request desk" text="Your outgoing and incoming requests will appear here." /><AuthPanel /></div> : <><Tabs defaultValue="outgoing" className="mt-8"><TabsList><TabsTrigger value="outgoing">Outgoing ({outgoing.length})</TabsTrigger><TabsTrigger value="incoming">Can help ({incoming.length})</TabsTrigger></TabsList><TabsContent value="outgoing" className="mt-5"><RequestList items={outgoing} empty="You haven’t created a request yet." /></TabsContent><TabsContent value="incoming" className="mt-5"><RequestList items={incoming} empty="No compatible requests are nearby right now." /></TabsContent></Tabs><ApprovalRequests session={session} /></>}</main></Shell>;
 }
 
 export function ProfilePage() {

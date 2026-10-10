@@ -193,6 +193,57 @@
   }
 }
 
+.home-hero {
+  background:
+    radial-gradient(circle at 82% 16%, color-mix(in oklab, var(--color-brand) 16%, transparent), transparent 28%),
+    radial-gradient(circle at 62% 90%, color-mix(in oklab, var(--color-trust) 12%, transparent), transparent 34%),
+    linear-gradient(135deg, var(--color-card) 0%, var(--color-card) 52%, var(--color-trust-soft) 100%);
+}
+
+.home-hero::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.32;
+  content: "";
+  background-image: radial-gradient(color-mix(in oklab, var(--color-trust) 22%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(120deg, transparent 20%, black 68%, transparent 100%);
+}
+
+.hero-orbit {
+  position: absolute;
+  right: -9rem;
+  top: -11rem;
+  width: 32rem;
+  height: 32rem;
+  border: 1px solid color-mix(in oklab, var(--color-brand) 20%, transparent);
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2rem color-mix(in oklab, var(--color-brand) 5%, transparent), 0 0 0 5rem color-mix(in oklab, var(--color-trust) 5%, transparent);
+}
+
+.hero-orbit::after {
+  position: absolute;
+  left: 15%;
+  bottom: 19%;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  background: var(--color-brand);
+  box-shadow: 0 0 0 0.4rem color-mix(in oklab, var(--color-brand) 18%, transparent);
+  content: "";
+}
+
+.impact-card {
+  background: linear-gradient(145deg, color-mix(in oklab, var(--color-trust) 92%, black), color-mix(in oklab, var(--color-brand) 78%, var(--color-trust)));
+  box-shadow: 0 18px 45px color-mix(in oklab, var(--color-trust) 22%, transparent);
+}
+
+.soft-grid {
+  background-image: linear-gradient(color-mix(in oklab, var(--color-line) 72%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--color-line) 72%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
