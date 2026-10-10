@@ -180,6 +180,11 @@
     border-color: var(--color-border);
   }
 
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 7rem;
+  }
+
   body {
     min-width: 360px;
     background-color: var(--color-canvas);

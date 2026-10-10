@@ -63,12 +63,14 @@ export function Shell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-line/80 bg-card/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-8 lg:py-5">
           <Brand />
-          <nav className="grid w-full grid-cols-5 gap-1 rounded-xl border border-line bg-card/80 p-1 shadow-sm sm:w-auto" aria-label="Main navigation">
+          <nav className="flex w-full flex-wrap gap-1 rounded-2xl border border-line bg-card/80 p-1.5 shadow-sm sm:w-auto sm:max-w-[760px]" aria-label="Main navigation">
             <NavLink to="/" active={pathname === "/"}><House />Home</NavLink>
             <NavLink to="/donors" active={pathname === "/donors"}><Search />Donors</NavLink>
             <NavLink to="/new-request" active={pathname === "/new-request"}>New request</NavLink>
             <NavLink to="/requests" active={pathname === "/requests"}>My requests</NavLink>
             <NavLink to="/profile" active={pathname === "/profile"}><UserRound />Profile</NavLink>
+            <NavLink to="/eligibility" active={pathname === "/eligibility"}>Eligibility</NavLink>
+            <NavLink to="/terms" active={pathname === "/terms"}>Terms</NavLink>
           </nav>
         </div>
       </header>
@@ -86,8 +88,8 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-function NavLink({ to, active, children }: { to: "/" | "/donors" | "/new-request" | "/requests" | "/profile"; active: boolean; children: ReactNode }) {
-  return <Link to={to} className={`flex min-w-0 items-center justify-center gap-1 rounded-lg px-2 py-2 text-center text-xs font-medium transition-all sm:px-3 sm:text-sm [&_svg]:hidden [&_svg]:size-3.5 lg:[&_svg]:block ${active ? "bg-trust text-primary-foreground shadow-sm" : "text-ink-soft hover:bg-secondary hover:text-trust"}`}>{children}</Link>;
+function NavLink({ to, active, children }: { to: "/" | "/donors" | "/new-request" | "/requests" | "/profile" | "/eligibility" | "/terms"; active: boolean; children: ReactNode }) {
+  return <Link to={to} className={`flex min-h-10 flex-1 items-center justify-center gap-1 rounded-xl px-3 py-2.5 text-center text-sm font-semibold transition-all sm:flex-none sm:px-4 [&_svg]:hidden [&_svg]:size-4 lg:[&_svg]:block ${active ? "bg-trust text-primary-foreground shadow-md shadow-trust/20" : "text-ink-soft hover:bg-secondary hover:text-trust"}`}>{children}</Link>;
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
