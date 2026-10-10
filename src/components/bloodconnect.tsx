@@ -77,7 +77,10 @@ export function Shell({ children }: { children: ReactNode }) {
       {children}
       <footer className="border-t border-trust/15 bg-trust-soft/50">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-          <p className="text-sm text-ink-soft">BloodConnect · Care starts with community.</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <p className="text-sm text-ink-soft">BloodConnect · Care starts with community.</p>
+            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3 py-1.5 text-xs font-semibold text-ink shadow-sm" aria-label="Made in India"><span className="flex flex-col gap-0.5 overflow-hidden rounded-sm"><span className="h-0.5 w-4 bg-[#f97316]" /><span className="h-0.5 w-4 bg-[#2563eb]" /><span className="h-0.5 w-4 bg-[#16a34a]" /></span>Made in India</span>
+          </div>
           <nav aria-label="Donation guidance and legal" className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
             <Link to="/eligibility" className="text-ink-soft underline-offset-4 hover:text-brand hover:underline">Donation eligibility</Link>
             <Link to="/terms" className="text-ink-soft underline-offset-4 hover:text-brand hover:underline">Terms & Conditions</Link>
