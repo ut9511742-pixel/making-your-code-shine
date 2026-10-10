@@ -9,7 +9,7 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- BloodConnect uses one shared `src/components/bloodconnect.tsx` experience across its five public routes so auth and navigation remain consistent.
+- BloodConnect public pages reuse the shared Shell from `src/components/bloodconnect.tsx`; informational content lives in `src/components/donation-guidance.tsx` so navigation stays consistent without mixing guidance with member workflows.
 - Imported donor records stay in the private `bloodconnect_private` schema and reach clients only through the pseudonymous search function, preventing raw identity and phone exposure.
 - Interactive maps load only in the browser and show request locations and coverage, never individual donor pins, to avoid server-render breakage and protect donors.
 - Donor location sharing requires explicit donor approval; expose exact profile coordinates only through an authenticated, requester-scoped approval check.
