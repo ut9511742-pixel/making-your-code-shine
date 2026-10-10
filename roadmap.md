@@ -8,4 +8,4 @@
 - [x] Verify all five pages and signed-out donor search behavior.
 - [x] Add an interactive request-tracking map with radius circles while keeping donor locations private.
 - [ ] Add donor profile pages and separate donor-approved location requests; reveal exact member locations only to the approved requester.
-- [ ] Add donation eligibility guidance and a public Terms and Conditions page; verify their links and content.
+- [x] Add donation eligibility guidance and a public Terms and Conditions page; verify their links and content.
