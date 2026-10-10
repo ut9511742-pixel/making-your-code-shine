@@ -52,7 +52,7 @@ function Brand() {
   );
 }
 
-function Shell({ children }: { children: ReactNode }) {
+export function Shell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   return (
     <div className="min-h-screen bg-canvas">
@@ -69,6 +69,15 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       </header>
       {children}
+      <footer className="border-t border-line bg-card">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+          <p className="text-sm text-ink-soft">BloodConnect · Care starts with community.</p>
+          <nav aria-label="Donation guidance and legal" className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
+            <Link to="/eligibility" className="text-ink-soft underline-offset-4 hover:text-brand hover:underline">Donation eligibility</Link>
+            <Link to="/terms" className="text-ink-soft underline-offset-4 hover:text-brand hover:underline">Terms & Conditions</Link>
+          </nav>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -179,6 +188,7 @@ export function HomePage() {
                 <Button asChild size="lg" variant="outline" className="h-auto justify-start rounded-xl px-5 py-4 shadow-sm"><Link to="/profile"><HeartPulse className="text-brand" /><span className="text-left"><strong className="block">Become a donor</strong><span className="text-xs font-normal text-ink-soft">Keep your availability ready</span></span></Link></Button>
                 <Button asChild size="lg" className="h-auto justify-start rounded-xl bg-brand px-5 py-4 text-primary-foreground shadow-lg shadow-brand/20 hover:bg-brand-ink"><Link to="/donors"><Search /><span className="text-left"><strong className="block">Find blood</strong><span className="text-xs font-normal opacity-80">Search nearby matches</span></span></Link></Button>
               </div>
+              <Button asChild variant="link" className="mt-3 h-auto whitespace-normal px-0 text-brand"><Link to="/eligibility">Can I donate blood? View eligibility criteria <ArrowRight /></Link></Button>
               <div className="mt-10 grid max-w-xl grid-cols-3 gap-3 border-t border-line pt-6">
                 <Stat icon={<Users />} value="400" label="demo donors" />
                 <Stat icon={<Clock3 />} value="90 days" label="eligibility check" />
