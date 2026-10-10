@@ -9,3 +9,4 @@
 - [x] Add an interactive request-tracking map with radius circles while keeping donor locations private.
 - [ ] Add donor profile pages and separate donor-approved location requests; reveal exact member locations only to the approved requester.
 - [x] Add donation eligibility guidance and a public Terms and Conditions page; verify their links and content.
+- [ ] Refresh the website with balanced white, red and blue colors and verify all public pages.
