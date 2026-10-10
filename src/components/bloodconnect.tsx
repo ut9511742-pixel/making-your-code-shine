@@ -63,7 +63,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-line/80 bg-card/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between lg:px-8 lg:py-5">
           <Brand />
-          <nav className="flex w-full flex-wrap gap-1 rounded-2xl border border-line bg-card/80 p-1.5 shadow-sm sm:w-auto sm:max-w-[760px]" aria-label="Main navigation">
+          <nav className="flex w-full flex-wrap gap-0.5 rounded-xl border border-line bg-card/80 p-1 shadow-sm sm:w-auto sm:max-w-[700px]" aria-label="Main navigation">
             <NavLink to="/" active={pathname === "/"}><House />Home</NavLink>
             <NavLink to="/donors" active={pathname === "/donors"}><Search />Donors</NavLink>
             <NavLink to="/new-request" active={pathname === "/new-request"}>New request</NavLink>
@@ -92,7 +92,7 @@ export function Shell({ children }: { children: ReactNode }) {
 }
 
 function NavLink({ to, active, children }: { to: "/" | "/donors" | "/new-request" | "/requests" | "/profile" | "/eligibility" | "/terms"; active: boolean; children: ReactNode }) {
-  return <Link to={to} className={`flex min-h-10 flex-1 items-center justify-center gap-1 rounded-xl px-3 py-2.5 text-center text-sm font-semibold transition-all sm:flex-none sm:px-4 [&_svg]:hidden [&_svg]:size-4 lg:[&_svg]:block ${active ? "bg-trust text-primary-foreground shadow-md shadow-trust/20" : "text-ink-soft hover:bg-secondary hover:text-trust"}`}>{children}</Link>;
+  return <Link to={to} className={`flex min-h-8 flex-1 items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-center text-xs font-semibold transition-all sm:flex-none sm:px-2.5 sm:text-sm [&_svg]:hidden [&_svg]:size-3.5 lg:[&_svg]:block ${active ? "bg-trust text-primary-foreground shadow-sm shadow-trust/20" : "text-ink-soft hover:bg-secondary hover:text-trust"}`}>{children}</Link>;
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
@@ -237,8 +237,14 @@ export function DonorDesk() {
   const { session } = useSession();
   const [group, setGroup] = useState<BloodGroup>("O+");
   const [radius, setRadius] = useState("10");
+  const [searchTerm, setSearchTerm] = useState("");
   const [donors, setDonors] = useState<DonorResult[]>(demoDonors);
   const [notice, setNotice] = useState<Notice>(null);
+  const visibleDonors = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return donors;
+    return donors.filter((donor) => [donor.donor_initials, donor.blood_group, donor.area, donor.city].some((value) => value.toLowerCase().includes(query)));
+  }, [donors, searchTerm]);
 
   async function search(event: FormEvent) {
     event.preventDefault();
@@ -280,8 +286,9 @@ export function DonorDesk() {
               </div>
             </form>
             <div>
-              <div className="mb-4 flex items-end justify-between"><div><p className="font-mono text-xs uppercase text-ink-soft">Nearest first</p><h2 className="font-display text-3xl font-semibold">Available donors</h2></div><span className="text-sm text-ink-soft">{donors.length} matches</span></div>
-              <div className="grid gap-3">{donors.map((donor, index) => <DonorCard key={`${donor.donor_reference}-${index}`} donor={donor} group={group} radius={radius} />)}</div>
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-xs uppercase text-ink-soft">Nearest first</p><h2 className="font-display text-3xl font-semibold">Available donors</h2></div><span className="text-sm text-ink-soft">{visibleDonors.length} matches</span></div>
+              <label className="relative mb-4 block"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-soft" /><Input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search people by blood group, area, city or initials" aria-label="Search available donors" className="h-11 rounded-xl pl-10" /></label>
+              {visibleDonors.length ? <div className="grid gap-3">{visibleDonors.map((donor, index) => <DonorCard key={`${donor.donor_reference}-${index}`} donor={donor} group={group} radius={radius} />)}</div> : <Empty title="No people found" text="Try a blood group, area, city, or donor initials." />}
             </div>
           </div>
         </section>
