@@ -56,6 +56,31 @@ function Brand() {
   );
 }
 
+function MadeInIndiaLionBadge() {
+  return (
+    <span
+      className="inline-flex items-center gap-2 rounded-md border border-line bg-card px-2.5 py-1.5 text-left shadow-sm"
+      aria-label="Made in India — independent BloodConnect product mark"
+      title="Made in India — independent BloodConnect product mark"
+    >
+      <span className="grid size-8 place-items-center rounded-full border border-brand/30 bg-brand/10 text-brand">
+        <svg viewBox="0 0 48 48" className="size-5" fill="none" aria-hidden="true">
+          <path
+            d="M25.6 8.2c-2.9-2.2-7.1-1.8-9.6.9-1.4 1.5-1.8 3.4-1.4 5.3-3.7 1.1-5.9 4.4-5.5 7.9.3 2.8 2.1 5 4.6 6.2-1.6 2.1-1.8 5-.3 7.3 1.7 2.8 5.2 3.8 8.2 2.4 1.3 1.3 3.1 2 5 2 3.5 0 6.4-2.3 7.4-5.5 3 .1 5.7-1.8 6.5-4.7.7-2.5-.2-5.2-2.2-6.8 1.4-2.2 1.3-5.2-.4-7.2-1.5-1.8-3.8-2.6-6-2.3-1.1-2.2-3.5-3.6-6.3-3.5Z"
+            fill="currentColor"
+          />
+          <path d="M19 21.2c2.2 1.2 4.8 1.7 7.3 1.2 2.8-.5 5.1-2.1 6.6-4.3M17 29.2c3.8 1.2 7.9 1 11.5-.5M20.5 35.5c1.4-1.6 2-3.7 1.8-5.8" stroke="white" strokeWidth="1.7" strokeLinecap="round" />
+          <circle cx="31.8" cy="20" r="1.1" fill="white" />
+        </svg>
+      </span>
+      <span className="flex flex-col gap-0.5">
+        <strong className="text-[9px] leading-none tracking-[0.15em] text-ink">MADE IN INDIA</strong>
+        <span className="text-[9px] leading-none text-ink-soft">Built with care</span>
+      </span>
+    </span>
+  );
+}
+
 export function Shell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   return (
@@ -79,7 +104,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <div className="flex flex-wrap items-center gap-4">
             <p className="text-sm text-ink-soft">BloodConnect · Care starts with community.</p>
-            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3 py-1.5 text-xs font-semibold text-ink shadow-sm" aria-label="Made in India"><span className="flex flex-col gap-0.5 overflow-hidden rounded-sm"><span className="h-0.5 w-4 bg-[#f97316]" /><span className="h-0.5 w-4 bg-[#2563eb]" /><span className="h-0.5 w-4 bg-[#16a34a]" /></span>Made in India</span>
+            <MadeInIndiaLionBadge />
           </div>
           <nav aria-label="Donation guidance and legal" className="flex flex-wrap gap-x-6 gap-y-3 text-sm">
             <Link to="/eligibility" className="text-ink-soft underline-offset-4 hover:text-brand hover:underline">Donation eligibility</Link>
