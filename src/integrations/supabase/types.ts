@@ -205,7 +205,7 @@ donation_history: {
       }
       donor_approval_audit: {
         Row: {
-          admin_id: string | null
+          actor_id: string | null
           created_at: string
           donor_id: string
           from_status: string
@@ -214,7 +214,7 @@ donation_history: {
           to_status: string
         }
         Insert: {
-          admin_id?: string | null
+          actor_id?: string | null
           created_at?: string
           donor_id: string
           from_status: string
@@ -223,7 +223,7 @@ donation_history: {
           to_status: string
         }
         Update: {
-          admin_id?: string | null
+          actor_id?: string | null
           created_at?: string
           donor_id?: string
           from_status?: string
@@ -283,7 +283,7 @@ donation_history: {
       review_donor: {
         Args: {
           decision: string
-          decision_reason?: string
+          decision_reason?: string | null
           target_donor_id: string
         }
         Returns: Json
