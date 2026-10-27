@@ -493,7 +493,7 @@ export function ProfilePage() {
     setBusy(true); setNotice(null);
     const { error } = await supabase.from("profiles").update({ full_name, blood_group, city, area, phone, latitude, longitude, available, last_donation_date, consent_at: consent_given ? (profile?.consent_at ?? new Date().toISOString()) : null }).eq("user_id", session.user.id);
     setBusy(false);
-    setNotice(error ? { tone: "error", text: error.message } : { tone: "success", text: "Profile saved. Your donor availability is up to date." });
+    setNotice(error ? { tone: "error", text: error.message } : { tone: "success", text: "Profile and consent settings saved. Approval and donation eligibility are handled separately." });
     if (!error && profile) { const { data } = await supabase.from("profiles").select("full_name,blood_group,city,area,latitude,longitude,available,last_donation_date,phone,consent_at,approval_status,requested_information,rejection_reason").eq("user_id", session.user.id).maybeSingle(); if (data) setProfile(data as typeof profile); }
   }
 
