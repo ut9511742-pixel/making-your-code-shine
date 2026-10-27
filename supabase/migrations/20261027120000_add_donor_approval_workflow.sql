@@ -93,7 +93,9 @@ BEGIN
     RETURN NEW;
   END IF;
 
-  donor_write := auth.uid() IS NOT NULL AND auth.uid() = OLD.user_id;\n\n  IF NOT review_write AND (
+  donor_write := auth.uid() IS NOT NULL AND auth.uid() = OLD.user_id;
+
+  IF NOT review_write AND (
     NEW.approval_status IS DISTINCT FROM OLD.approval_status OR
     NEW.rejection_reason IS DISTINCT FROM OLD.rejection_reason OR
     NEW.requested_information IS DISTINCT FROM OLD.requested_information OR
