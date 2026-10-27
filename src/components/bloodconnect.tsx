@@ -198,12 +198,6 @@ function AuthForm({ mode, busy, notice, onSubmit }: { mode: "signin" | "signup";
   );
 }
 
-const demoDonors: DonorResult[] = [
-  { donor_reference: "demo:pn", donor_initials: "PN", blood_group: "O-", city: "Indore", area: "Vijay Nagar", distance_km: 2.4, available: true, days_since_donation: null, eligible: true, is_demo: true },
-  { donor_reference: "demo:as", donor_initials: "AS", blood_group: "O+", city: "Indore", area: "Palasia", distance_km: 4.1, available: true, days_since_donation: null, eligible: true, is_demo: true },
-  { donor_reference: "demo:sk", donor_initials: "SK", blood_group: "A+", city: "Indore", area: "Bhawarkua", distance_km: 7.8, available: true, days_since_donation: null, eligible: true, is_demo: true },
-];
-
 export function HomePage() {
   return (
     <Shell>
@@ -261,7 +255,7 @@ export function DonorDesk() {
   const [group, setGroup] = useState<BloodGroup>("O+");
   const [radius, setRadius] = useState("10");
   const [searchTerm, setSearchTerm] = useState("");
-  const [donors, setDonors] = useState<DonorResult[]>(demoDonors);
+  const [donors, setDonors] = useState<DonorResult[]>([]);
   const [notice, setNotice] = useState<Notice>(null);
   const visibleDonors = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
@@ -464,13 +458,13 @@ export function RequestsPage() {
 
 export function ProfilePage() {
   const { session, ready } = useSession();
-  const [profile, setProfile] = useState<{ full_name: string; blood_group: BloodGroup | null; city: string; area: string; latitude: number; longitude: number; available: boolean; last_donation_date: string | null; phone: string } | null>(null);
+  const [profile, setProfile] = useState<{ full_name: string; blood_group: BloodGroup | null; city: string; area: string; latitude: number; longitude: number; available: boolean; last_donation_date: string | null; phone: string; consent_at: string | null; approval_status: string; requested_information: string | null; rejection_reason: string | null } | null>(null);
   const [notice, setNotice] = useState<Notice>(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!session) { setProfile(null); return; }
-    void supabase.from("profiles").select("full_name,blood_group,city,area,latitude,longitude,available,last_donation_date,phone").eq("user_id", session.user.id).maybeSingle().then(({ data, error }) => {
+    void supabase.from("profiles").select("full_name,blood_group,city,area,latitude,longitude,available,last_donation_date,phone,consent_at,approval_status,requested_information,rejection_reason").eq("user_id", session.user.id).maybeSingle().then(({ data, error }) => {
       if (error) setNotice({ tone: "error", text: error.message });
       else setProfile(data as typeof profile);
     });
@@ -489,17 +483,19 @@ export function ProfilePage() {
     const blood_group = String(values.get("blood_group") ?? "") as BloodGroup;
     const last_donation_date = String(values.get("last_donation_date") ?? "") || null;
     const available = values.get("available") === "on";
+    const consent_given = values.get("donor_consent") === "on";
+    if (!consent_given) { setNotice({ tone: "error", text: "Consent is required before your profile can be reviewed or shown to matched members." }); return; }
     if (full_name.length < 2 || full_name.length > 80 || city.length < 2 || city.length > 80 || area.length < 1 || area.length > 120 || !BLOOD_GROUPS.includes(blood_group) || !/^\+?[0-9 ()-]{7,20}$/.test(phone) || !Number.isFinite(latitude) || latitude < -90 || latitude > 90 || !Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
       setNotice({ tone: "error", text: "Check your name, blood group, phone, location, and coordinates." }); return;
     }
     setBusy(true); setNotice(null);
-    const { error } = await supabase.from("profiles").update({ full_name, blood_group, city, area, phone, latitude, longitude, available, last_donation_date }).eq("user_id", session.user.id);
+    const { error } = await supabase.from("profiles").update({ full_name, blood_group, city, area, phone, latitude, longitude, available, last_donation_date, consent_at: profile.consent_at ?? new Date().toISOString() }).eq("user_id", session.user.id);
     setBusy(false);
     setNotice(error ? { tone: "error", text: error.message } : { tone: "success", text: "Profile saved. Your donor availability is up to date." });
-    if (!error && profile) setProfile({ ...profile, full_name, blood_group, city, area, phone, latitude, longitude, available, last_donation_date });
+    if (!error && profile) { const { data } = await supabase.from("profiles").select("full_name,blood_group,city,area,latitude,longitude,available,last_donation_date,phone,consent_at,approval_status,requested_information,rejection_reason").eq("user_id", session.user.id).maybeSingle(); if (data) setProfile(data as typeof profile); }
   }
 
-  return <Shell><main className="mx-auto max-w-6xl px-5 py-12 lg:px-8"><p className="font-mono text-xs uppercase text-brand">Member record</p><h1 className="mt-2 font-display text-5xl font-semibold">My profile</h1><p className="mt-3 max-w-xl text-ink-soft">Keep your donor details accurate so the network can find the right match.</p>{!ready ? <div className="mt-8 h-64 animate-pulse rounded-md bg-muted" /> : !session ? <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]"><Empty title="Sign in to manage your profile" text="Your private contact and donor details are stored securely." /><AuthPanel /></div> : !profile ? <div className="mt-8 h-64 animate-pulse rounded-md bg-muted" /> : <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_300px]"><form onSubmit={(event) => void save(event)} className="grid gap-5 rounded-md border border-line bg-card p-6 shadow-sm sm:grid-cols-2"><Field label="Full name"><Input name="full_name" defaultValue={profile.full_name} minLength={2} maxLength={80} required /></Field><Field label="Blood group"><Select name="blood_group" defaultValue={profile.blood_group ?? "O+"}><SelectTrigger><SelectValue placeholder="Select blood group" /></SelectTrigger><SelectContent>{BLOOD_GROUPS.map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select></Field><Field label="Phone"><Input name="phone" type="tel" defaultValue={profile.phone} maxLength={20} required /></Field><Field label="Last donation"><Input name="last_donation_date" type="date" defaultValue={profile.last_donation_date ?? ""} /></Field><Field label="City"><Input name="city" defaultValue={profile.city} minLength={2} maxLength={80} required /></Field><Field label="Area"><Input name="area" defaultValue={profile.area} minLength={1} maxLength={120} required /></Field><Field label="Latitude"><Input name="latitude" type="number" step="any" min={-90} max={90} defaultValue={profile.latitude} required /></Field><Field label="Longitude"><Input name="longitude" type="number" step="any" min={-180} max={180} defaultValue={profile.longitude} required /></Field><label className="flex items-center gap-3 rounded-md border border-line bg-background p-4 sm:col-span-2"><input name="available" type="checkbox" defaultChecked={profile.available} className="size-4 accent-current" /><span><strong className="block text-sm text-ink">Available to donate</strong><span className="text-xs text-ink-soft">Include me in compatible donor searches</span></span></label><div className="sm:col-span-2"><NoticeBox notice={notice} /><Button className="mt-4 w-full" disabled={busy}><PencilLine />{busy ? "Saving…" : "Save profile"}</Button></div></form><aside className="h-fit rounded-md border border-line bg-primary p-5 text-primary-foreground"><ShieldCheck className="size-6" /><h2 className="mt-4 font-display text-2xl font-semibold">Protected details</h2><p className="mt-2 text-sm opacity-75">Your name and phone stay private until you accept a matching request.</p></aside></div>}</main></Shell>;
+  return <Shell><main className="mx-auto max-w-6xl px-5 py-12 lg:px-8"><p className="font-mono text-xs uppercase text-brand">Member record</p><h1 className="mt-2 font-display text-5xl font-semibold">My profile</h1><p className="mt-3 max-w-xl text-ink-soft">Keep your donor details accurate so the network can find the right match.</p>{!ready ? <div className="mt-8 h-64 animate-pulse rounded-md bg-muted" /> : !session ? <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]"><Empty title="Sign in to manage your profile" text="Your private contact and donor details are stored securely." /><AuthPanel /></div> : !profile ? <div className="mt-8 h-64 animate-pulse rounded-md bg-muted" /> : <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_300px]"><form onSubmit={(event) => void save(event)} className="grid gap-5 rounded-md border border-line bg-card p-6 shadow-sm sm:grid-cols-2"><Field label="Full name"><Input name="full_name" defaultValue={profile.full_name} minLength={2} maxLength={80} required /></Field><Field label="Blood group"><Select name="blood_group" defaultValue={profile.blood_group ?? "O+"}><SelectTrigger><SelectValue placeholder="Select blood group" /></SelectTrigger><SelectContent>{BLOOD_GROUPS.map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select></Field><Field label="Phone"><Input name="phone" type="tel" defaultValue={profile.phone} maxLength={20} required /></Field><Field label="Last donation"><Input name="last_donation_date" type="date" defaultValue={profile.last_donation_date ?? ""} /></Field><Field label="City"><Input name="city" defaultValue={profile.city} minLength={2} maxLength={80} required /></Field><Field label="Area"><Input name="area" defaultValue={profile.area} minLength={1} maxLength={120} required /></Field><Field label="Latitude"><Input name="latitude" type="number" step="any" min={-90} max={90} defaultValue={profile.latitude} required /></Field><Field label="Longitude"><Input name="longitude" type="number" step="any" min={-180} max={180} defaultValue={profile.longitude} required /></Field><label className="flex items-start gap-3 rounded-md border border-line bg-background p-4 sm:col-span-2"><input name="donor_consent" type="checkbox" defaultChecked={Boolean(profile.consent_at)} required className="mt-1 size-4 accent-current" /><span className="text-sm text-ink-soft">I consent to BloodConnect coordinators reviewing my donor details and sharing my contact details only with matched request participants. This consent is recorded with a timestamp; medical eligibility is assessed separately.</span></label><label className="flex items-center gap-3 rounded-md border border-line bg-background p-4 sm:col-span-2"><input name="available" type="checkbox" defaultChecked={profile.available} className="size-4 accent-current" /><span><strong className="block text-sm text-ink">Available to donate</strong><span className="text-xs text-ink-soft">Include me in compatible donor searches</span></span></label><div className="sm:col-span-2"><NoticeBox notice={notice} /><Button className="mt-4 w-full" disabled={busy}><PencilLine />{busy ? "Saving…" : "Save profile"}</Button></div></form><aside className="h-fit rounded-md border border-line bg-primary p-5 text-primary-foreground"><ShieldCheck className="size-6" /><h2 className="mt-4 font-display text-2xl font-semibold">Protected details</h2><p className="mt-2 text-sm opacity-75">Your name, phone, and location are visible to authorized coordinators only. Contact details are shared with matched request participants after you accept.</p><p className="mt-4 text-sm">Approval status: <strong className="capitalize">{profile.approval_status.replace("_", " ")}</strong></p>{profile.requested_information && <p className="mt-2 rounded-md bg-white/10 p-3 text-sm">Please provide: {profile.requested_information}</p>}{profile.rejection_reason && <p className="mt-2 rounded-md bg-white/10 p-3 text-sm">Review note: {profile.rejection_reason}</p>}</aside></div>}</main></Shell>;
 }
 
 function RequestList({ items, empty }: { items: BloodRequest[]; empty: string }) {
