@@ -205,6 +205,8 @@
 main .bg-card {
   --color-ink: oklch(0.1695 0.0220 267.28);
   --color-ink-soft: oklch(0.43 0.025 255);
+  --color-muted-foreground: oklch(0.43 0.025 255);
+  --color-input: oklch(0.88 0.01 260);
   --color-foreground: oklch(0.1695 0.0220 267.28);
   --color-card-foreground: oklch(0.1695 0.0220 267.28);
   --color-brand-ink: oklch(0.48 0.17 22.5);
@@ -218,6 +220,7 @@ main .bg-card {
 main .bg-card .bg-trust-soft {
   --color-ink: oklch(1 0 0);
   --color-ink-soft: oklch(0.90 0.02 253);
+  --color-muted-foreground: oklch(0.90 0.02 253);
   --color-foreground: oklch(1 0 0);
   --color-brand-ink: oklch(0.81 0.10 20);
   color: var(--color-foreground);
