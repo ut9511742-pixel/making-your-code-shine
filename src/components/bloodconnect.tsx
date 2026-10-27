@@ -81,6 +81,8 @@ function MadeInIndiaLionBadge() {
 
 export function Shell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const { session } = useSession();
+  const isAdmin = (session?.user.app_metadata as Record<string, unknown> | undefined)?.role === "admin";
   return (
     <div className="min-h-screen bg-canvas">
       <header className="sticky top-0 z-40 border-b border-line/80 bg-card/90 backdrop-blur-xl">
@@ -94,6 +96,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <NavLink to="/profile" active={pathname === "/profile"}><UserRound />Profile</NavLink>
             <NavLink to="/eligibility" active={pathname === "/eligibility"}>Eligibility</NavLink>
             <NavLink to="/terms" active={pathname === "/terms"}>Terms</NavLink>
+            {isAdmin && <NavLink to={"/admin/dashboard" as never} active={pathname.startsWith("/admin")}><ShieldCheck />Admin Dashboard</NavLink>}
           </nav>
         </div>
       </header>
@@ -114,7 +117,7 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-function NavLink({ to, active, children }: { to: "/" | "/donors" | "/new-request" | "/requests" | "/profile" | "/eligibility" | "/terms"; active: boolean; children: ReactNode }) {
+function NavLink({ to, active, children }: { to: "/" | "/donors" | "/new-request" | "/requests" | "/profile" | "/eligibility" | "/terms" | never; active: boolean; children: ReactNode }) {
   return <Link to={to} className={`flex min-h-8 flex-1 items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-center text-xs font-semibold transition-all sm:flex-none sm:px-2.5 sm:text-sm [&_svg]:hidden [&_svg]:size-3.5 lg:[&_svg]:block ${active ? "bg-trust text-primary-foreground shadow-sm shadow-trust/20" : "text-ink-soft hover:bg-trust-soft hover:text-trust"}`}>{children}</Link>;
 }
 
@@ -127,7 +130,7 @@ function NoticeBox({ notice }: { notice: Notice }) {
   return <p role="status" className={`rounded-md border px-3 py-2 text-sm ${notice.tone === "error" ? "border-brand/30 bg-brand/10 text-brand-ink" : "border-avail/30 bg-avail/10 text-ink"}`}>{notice.text}</p>;
 }
 
-function useSession() {
+export function useSession() {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   useEffect(() => {
