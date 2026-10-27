@@ -16,6 +16,15 @@ CREATE INDEX profiles_approved_availability_idx
   ON public.profiles (city, blood_group, available)
   WHERE approval_status = 'approved';
 
+CREATE OR REPLACE FUNCTION public.is_bloodconnect_admin()
+RETURNS boolean
+LANGUAGE sql STABLE SECURITY INVOKER SET search_path = ''
+AS $
+  SELECT COALESCE(auth.jwt() -> 'app_metadata' ->> 'role' = 'admin', false)
+$;
+REVOKE ALL ON FUNCTION public.is_bloodconnect_admin() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_bloodconnect_admin() TO authenticated;
+
 CREATE TABLE public.donor_approval_audit (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   donor_id uuid NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
@@ -55,15 +64,6 @@ INSERT INTO public.donation_history (donor_id, donation_date)
 SELECT user_id, last_donation_date FROM public.profiles
 WHERE last_donation_date IS NOT NULL
 ON CONFLICT (donor_id, donation_date) DO NOTHING;
-
-CREATE OR REPLACE FUNCTION public.is_bloodconnect_admin()
-RETURNS boolean
-LANGUAGE sql STABLE SECURITY INVOKER SET search_path = ''
-AS $$
-  SELECT COALESCE(auth.jwt() -> 'app_metadata' ->> 'role' = 'admin', false)
-$$;
-REVOKE ALL ON FUNCTION public.is_bloodconnect_admin() FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.is_bloodconnect_admin() TO authenticated;
 
 CREATE POLICY "Administrators can review donor profiles"
   ON public.profiles FOR SELECT TO authenticated
