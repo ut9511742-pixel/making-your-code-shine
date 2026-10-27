@@ -310,7 +310,7 @@ export function DonorDesk() {
             </form>
             <div>
               <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-xs uppercase text-ink-soft">Nearest first</p><h2 className="font-display text-3xl font-semibold">Available donors</h2></div><span className="text-sm text-ink-soft">{visibleDonors.length} matches</span></div>
-              <label className="relative mb-4 block"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-soft" /><Input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search people by blood group, area, city or initials" aria-label="Search available donors" className="h-11 rounded-xl pl-10" /></label>
+              <label className="relative mb-4 block"><Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-ink-soft" /><Input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search people by blood group, area, city or initials" aria-label="Search available donors" className="h-14 rounded-xl pl-12 text-base" /></label>
               {visibleDonors.length ? <div className="grid gap-3">{visibleDonors.map((donor, index) => <DonorCard key={`${donor.donor_reference}-${index}`} donor={donor} group={group} radius={radius} />)}</div> : <Empty title="No people found" text="Try a blood group, area, city, or donor initials." />}
             </div>
           </div>
