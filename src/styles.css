@@ -251,10 +251,10 @@ main .bg-card .bg-trust-soft .text-trust,
 main .bg-card .bg-trust-soft .text-blood-o { color: var(--trust); }
 
 main .bg-card .bg-muted {
-  --ink: oklch(1 0 0);
-  --ink-soft: oklch(0.90 0.02 253);
-  --foreground: oklch(1 0 0);
-  --muted-foreground: oklch(0.90 0.02 253);
+  --ink: oklch(0.1695 0.0220 267.28);
+  --ink-soft: oklch(0.43 0.025 255);
+  --foreground: oklch(0.1695 0.0220 267.28);
+  --muted-foreground: oklch(0.43 0.025 255);
   color: var(--foreground);
 }
 
