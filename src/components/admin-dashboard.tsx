@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUpDown, Check, Clock3, RefreshCw, Search, ShieldCheck, Users, X } from "lucide-react";
+import { ArrowLeft, ArrowUpDown, Check, Clock3, PhoneCall, RefreshCw, Search, ShieldCheck, Users, X } from "lucide-react";
 
 import { Shell, useSession } from "@/components/bloodconnect";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,17 @@ function statusLabel(status: string) {
 }
 function formatDonorId(id: string) {
   return id.slice(0, 8).toUpperCase();
+}
+
+function phoneHref(phone: string) {
+  const dialable = phone.replace(/[^0-9+]/g, "");
+  return /[0-9]/.test(dialable) ? `tel:${dialable}` : null;
+}
+
+function CallDonorLink({ phone }: { phone: string }) {
+  const href = phoneHref(phone);
+  if (!href) return null;
+  return <a href={href} aria-label={`Call donor at ${phone}`} className="inline-flex min-h-9 items-center gap-2 rounded-lg bg-brand px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><PhoneCall className="size-3.5" />Call donor</a>;
 }
 
 function useAdminAccess() {
@@ -258,7 +269,7 @@ export function DonorApprovalsPage() {
               <td className="px-3 py-3"><a className="font-semibold text-trust underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" href={`/admin/donors/${encodeURIComponent(donor.user_id)}`}>{donor.full_name || "Incomplete profile"}</a><a className="mt-1 block text-xs text-trust hover:underline" href={`/admin/donors/${encodeURIComponent(donor.user_id)}`}>View details</a></td>
               <td className="whitespace-nowrap px-3 py-3 font-semibold">{donor.blood_group ?? "—"}</td>
               <td className="px-3 py-3">{donor.city}<span className="block text-xs text-ink-soft">{donor.area}</span></td>
-              <td className="whitespace-nowrap px-3 py-3">{donor.phone || "Not supplied"}</td>
+              <td className="whitespace-nowrap px-3 py-3"><div>{donor.phone || "Not supplied"}</div>{donor.phone && <div className="mt-2"><CallDonorLink phone={donor.phone} /></div>}</td>
               <td className="whitespace-nowrap px-3 py-3">{dateLabel(donor.created_at)}</td>
               <td className="whitespace-nowrap px-3 py-3">{dateLabel(donor.last_donation_date)}</td>
               <td className="whitespace-nowrap px-3 py-3"><span className={donor.available ? "text-avail" : "text-ink-soft"}>{donor.available ? "Available" : "Unavailable"}</span></td>
@@ -329,7 +340,7 @@ export function AdminDonorDetailsPage({ donorId }: { donorId: string }) {
       <section className="rounded-2xl border border-line bg-card p-5 shadow-sm sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-4"><div><p className="font-mono text-xs uppercase tracking-widest text-trust">Donor ID {donor.user_id}</p><h2 className="mt-2 font-display text-3xl font-semibold">{donor.full_name || "Incomplete profile"}</h2><p className="mt-1 text-sm text-ink-soft">Registered {dateLabel(donor.created_at)} · reviewed {timeLabel(donor.reviewed_at)}</p></div><StatusBadge status={donor.approval_status} /></div>
         <dl className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <Detail label="Blood group" value={donor.blood_group ?? "Not supplied"} /><Detail label="City and location" value={`${donor.city}, ${donor.area}`} /><Detail label="Contact phone (admin only)" value={donor.phone || "Not supplied"} /><Detail label="Current availability" value={donor.available ? "Available to donate" : "Unavailable"} /><Detail label="Last donation (self-reported)" value={dateLabel(donor.last_donation_date)} /><Detail label="90-day interval check" value={eligibilityLabel(donor)} /><Detail label="Consent recorded" value={donor.consent_at ? `${timeLabel(donor.consent_at)} · ${donor.consent_text_version ?? "version not recorded"}` : "No consent recorded"} /><Detail label="Coordinates (restricted)" value={`${donor.latitude}, ${donor.longitude}`} /><Detail label="Current approval status" value={statusLabel(donor.approval_status)} />
+          <Detail label="Blood group" value={donor.blood_group ?? "Not supplied"} /><Detail label="City and location" value={`${donor.city}, ${donor.area}`} /><div className="min-w-0 rounded-lg bg-muted/60 p-3"><p className="text-xs font-medium text-ink-soft">Contact phone (admin only)</p><p className="mt-1 break-words text-sm font-semibold text-ink">{donor.phone || "Not supplied"}</p>{donor.phone && <div className="mt-3"><CallDonorLink phone={donor.phone} /></div>}</div><Detail label="Current availability" value={donor.available ? "Available to donate" : "Unavailable"} /><Detail label="Last donation (self-reported)" value={dateLabel(donor.last_donation_date)} /><Detail label="90-day interval check" value={eligibilityLabel(donor)} /><Detail label="Consent recorded" value={donor.consent_at ? `${timeLabel(donor.consent_at)} · ${donor.consent_text_version ?? "version not recorded"}` : "No consent recorded"} /><Detail label="Coordinates (restricted)" value={`${donor.latitude}, ${donor.longitude}`} /><Detail label="Current approval status" value={statusLabel(donor.approval_status)} />
         </dl>
         <p className="mt-4 text-sm"><strong>Submitted consent statement:</strong> {donor.consent_at ? DONOR_CONSENT_TEXT : "No consent was recorded."}</p>
         {(donor.requested_information || donor.rejection_reason) && <div className="mt-4 rounded-lg border border-warn/30 bg-warn/10 p-4 text-sm"><strong>Current review note</strong>{donor.requested_information && <p className="mt-2"><span className="font-medium">Information requested:</span> {donor.requested_information}</p>}{donor.rejection_reason && <p className="mt-2"><span className="font-medium">Rejection reason:</span> {donor.rejection_reason}</p>}</div>}
