@@ -117,7 +117,7 @@ export function Shell({ children }: { children: ReactNode }) {
 }
 
 function NavLink({ to, active, children }: { to: "/" | "/donors" | "/new-request" | "/requests" | "/profile" | "/eligibility" | "/terms"; active: boolean; children: ReactNode }) {
-  return <Link to={to} className={`flex min-h-8 flex-1 items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-center text-xs font-semibold transition-all sm:flex-none sm:px-2.5 sm:text-sm [&_svg]:hidden [&_svg]:size-3.5 lg:[&_svg]:block ${active ? "bg-trust text-primary-foreground shadow-sm shadow-trust/20" : "text-ink-soft hover:bg-secondary hover:text-trust"}`}>{children}</Link>;
+  return <Link to={to} className={`flex min-h-8 flex-1 items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-center text-xs font-semibold transition-all sm:flex-none sm:px-2.5 sm:text-sm [&_svg]:hidden [&_svg]:size-3.5 lg:[&_svg]:block ${active ? "bg-brand text-primary-foreground shadow-sm shadow-brand/20" : "text-ink-soft hover:bg-secondary hover:text-brand"}`}>{children}</Link>;
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
