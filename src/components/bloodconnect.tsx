@@ -44,14 +44,12 @@ type DonorResult = {
 
 function Brand() {
   return (
-    <Link to="/" className="flex items-center gap-3" aria-label="BloodConnect home">
-      <span className="grid size-10 place-items-center rounded-xl bg-brand text-primary-foreground shadow-md shadow-brand/20">
-        <Droplets className="size-5" />
-      </span>
-      <span>
-        <strong className="block font-display text-2xl font-normal leading-none text-ink">BloodConnect</strong>
-        <span className="text-[9px] font-semibold uppercase text-ink-soft">Community response network</span>
-      </span>
+    <Link to="/" className="flex items-center" aria-label="BloodConnect home">
+      <img
+        src="/bloodconnect-logo.svg"
+        alt="BloodConnect — Community Response Network"
+        className="h-12 w-auto max-w-[min(78vw,17rem)]"
+      />
     </Link>
   );
 }
