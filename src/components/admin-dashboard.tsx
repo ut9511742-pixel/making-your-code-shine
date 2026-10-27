@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowUpDown, Check, Clock3, RefreshCw, Search, ShieldCheck, Users, X } from "lucide-react";
 
@@ -65,18 +65,18 @@ function AdminSidebar() {
   return <aside className="h-fit rounded-2xl border border-line bg-card p-4 lg:sticky lg:top-28"><p className="px-3 pb-3 text-xs font-semibold uppercase tracking-widest text-ink-soft">Administrator</p><nav aria-label="Admin navigation" className="flex gap-2 overflow-x-auto lg:flex-col"><Link to={"/admin/dashboard" as never} className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold text-ink-soft hover:bg-trust-soft hover:text-trust">Dashboard</Link><Link to={"/admin/donor-approvals" as never} className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold text-ink-soft hover:bg-trust-soft hover:text-trust">Donor approvals</Link></nav></aside>;
 }
 
-function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLayout({ children }: { children: ReactNode }) {
   return <Shell><main className="mx-auto max-w-[90rem] px-4 py-8 sm:px-6 lg:px-8 lg:py-10"><div className="mb-7 flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl bg-trust/15 text-trust"><ShieldCheck className="size-5" /></span><div><p className="text-xs font-semibold uppercase tracking-widest text-trust">BloodConnect administration</p><h1 className="font-display text-3xl font-semibold sm:text-4xl">Donor Approval Panel</h1></div></div><div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]"><AdminSidebar /><section className="min-w-0">{children}</section></div></main></Shell>;
 }
 
 async function loadStats(): Promise<{ stats: Stats; error: string | null }> {
-  const run = () => supabase.from("profiles").select("user_id", { count: "exact", head: true });
+  const run = () => supabase.from("profiles").select("user_id", { count: "exact", head: true }).not("blood_group", "is", null).not("consent_at", "is", null);
   const [all, pending, approved, rejected, available] = await Promise.all([
-    run().not("blood_group", "is", null),
+    run(),
     run().eq("approval_status", "pending"),
     run().eq("approval_status", "approved"),
     run().eq("approval_status", "rejected"),
-    run().eq("approval_status", "approved").eq("available", true).not("consent_at", "is", null),
+    run().eq("approval_status", "approved").eq("available", true),
   ]);
   const error = all.error ?? pending.error ?? approved.error ?? rejected.error ?? available.error;
   return {
@@ -195,6 +195,7 @@ export function DonorApprovalsPage() {
     setLoading(true); setError("");
     try {
       let query = supabase.from("profiles").select("*", { count: "exact" }).order(sort, { ascending }).range(page * pageSize, page * pageSize + pageSize - 1);
+      query = query.not("blood_group", "is", null).not("consent_at", "is", null);
       if (bloodGroup !== "all") query = query.eq("blood_group", bloodGroup);
       if (city.trim()) query = query.ilike("city", `%${city.trim().replace(/[%_,()]/g, " ")}%`);
       if (availability !== "all") query = query.eq("available", availability === "available");
@@ -295,7 +296,7 @@ export function AdminDonorDetailsPage({ donorId }: { donorId: string }) {
 
   const loadDetails = useCallback(async () => {
     if (!access.isAdmin || !donorId) return;
-    setLoading(true); setError("");
+    setLoading(true); setError(""); setDonor(null);
     const [profileResult, historyResult, auditResult] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", donorId).maybeSingle(),
       supabase.from("donation_history").select("*").eq("donor_id", donorId).order("donation_date", { ascending: false }),
