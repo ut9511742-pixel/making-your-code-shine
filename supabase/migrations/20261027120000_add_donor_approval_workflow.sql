@@ -120,7 +120,13 @@ BEGIN
       NEW.area IS DISTINCT FROM OLD.area OR
       NEW.phone IS DISTINCT FROM OLD.phone;
 
-    IF identity_changed AND OLD.approval_status IN ('needs_information', 'approved') THEN
+    IF NEW.consent_at IS NULL AND OLD.approval_status = 'approved' THEN
+      NEW.approval_status := 'pending';
+      NEW.rejection_reason := NULL;
+      NEW.requested_information := NULL;
+      NEW.reviewed_by := NULL;
+      NEW.reviewed_at := NULL;
+    ELSIF identity_changed AND OLD.approval_status IN ('needs_information', 'approved') THEN
       NEW.approval_status := 'pending';
       NEW.rejection_reason := NULL;
       NEW.requested_information := NULL;
@@ -254,6 +260,7 @@ RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, b
     WHERE r.id = target_request_id
       AND r.status = 'open'
       AND p.approval_status = 'approved'
+      AND p.consent_at IS NOT NULL
       AND p.available = true
       AND p.city = r.city
       AND public.blood_group_compatible(p.blood_group, r.blood_group)
@@ -282,6 +289,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, bloodconnect_priv
     FROM public.profiles p
     WHERE p.user_id <> auth.uid()
       AND p.approval_status = 'approved'
+      AND p.consent_at IS NOT NULL
       AND p.blood_group IS NOT NULL
       AND p.city = search_city AND p.available = true
       AND public.blood_group_compatible(p.blood_group, search_blood_group)
@@ -321,6 +329,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
     FROM public.profiles p
     WHERE p.user_id <> auth.uid()
       AND p.approval_status = 'approved'
+      AND p.consent_at IS NOT NULL
       AND p.blood_group IS NOT NULL
       AND p.city = search_city
       AND p.available = true
@@ -369,6 +378,7 @@ BEGIN
   FROM public.profiles d
   WHERE d.user_id = target_uuid AND d.user_id <> auth.uid()
     AND d.approval_status = 'approved'
+    AND d.consent_at IS NOT NULL
     AND d.available AND d.blood_group IS NOT NULL AND d.city = viewer.city
     AND public.blood_group_compatible(d.blood_group, search_blood_group)
     AND (d.last_donation_date IS NULL OR d.last_donation_date <= CURRENT_DATE - 90)
@@ -384,7 +394,7 @@ BEGIN
   IF target_donor_id = requester THEN RAISE EXCEPTION 'You cannot request your own location'; END IF;
   SELECT * INTO request_row FROM public.blood_requests WHERE id = target_blood_request_id AND requester_id = requester AND status = 'open';
   IF NOT FOUND THEN RAISE EXCEPTION 'Choose one of your own open blood requests'; END IF;
-  SELECT * INTO donor FROM public.profiles WHERE user_id = target_donor_id AND approval_status = 'approved' AND available AND blood_group IS NOT NULL;
+  SELECT * INTO donor FROM public.profiles WHERE user_id = target_donor_id AND approval_status = 'approved' AND consent_at IS NOT NULL AND available AND blood_group IS NOT NULL;
   IF NOT FOUND OR (donor.last_donation_date IS NOT NULL AND donor.last_donation_date > CURRENT_DATE - 90) THEN RAISE EXCEPTION 'This donor is no longer available'; END IF;
   IF donor.city <> request_row.city OR NOT public.blood_group_compatible(donor.blood_group, request_row.blood_group) THEN RAISE EXCEPTION 'This donor does not match the request'; END IF;
   IF 6371 * 2 * asin(sqrt(power(sin(radians(donor.latitude - request_row.latitude) / 2), 2) + cos(radians(request_row.latitude)) * cos(radians(donor.latitude)) * power(sin(radians(donor.longitude - request_row.longitude) / 2), 2))) > request_row.radius_km THEN RAISE EXCEPTION 'This donor is outside your request radius'; END IF;
