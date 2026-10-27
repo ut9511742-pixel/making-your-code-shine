@@ -115,50 +115,125 @@ export type Database = {
       }
       profiles: {
         Row: {
+          approval_status: string
           area: string
           available: boolean
           blood_group: string | null
           city: string
+          consent_at: string | null
+          consent_text_version: string | null
           created_at: string
           full_name: string
           last_donation_date: string | null
           latitude: number
           longitude: number
           phone: string
+          rejection_reason: string | null
+          requested_information: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          approval_status?: string
           area?: string
           available?: boolean
           blood_group?: string | null
           city?: string
+          consent_at?: string | null
+          consent_text_version?: string | null
           created_at?: string
           full_name?: string
           last_donation_date?: string | null
           latitude?: number
           longitude?: number
           phone?: string
+          rejection_reason?: string | null
+          requested_information?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          approval_status?: string
           area?: string
           available?: boolean
           blood_group?: string | null
           city?: string
+          consent_at?: string | null
+          consent_text_version?: string | null
           created_at?: string
           full_name?: string
           last_donation_date?: string | null
           latitude?: number
           longitude?: number
           phone?: string
+          rejection_reason?: string | null
+          requested_information?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           updated_at?: string
           user_id?: string
         }
         Relationships: []
       }
-      request_responses: {
+donation_history: {
+        Row: {
+          donation_date: string
+          donor_id: string
+          id: string
+          recorded_at: string
+          source: string
+        }
+        Insert: {
+          donation_date: string
+          donor_id: string
+          id?: string
+          recorded_at?: string
+          source?: string
+        }
+        Update: {
+          donation_date?: string
+          donor_id?: string
+          id?: string
+          recorded_at?: string
+          source?: string
+        }
+        Relationships: []
+      }
+      donor_approval_audit: {
+        Row: {
+          admin_id: string | null
+          created_at: string
+          donor_id: string
+          from_status: string
+          id: string
+          reason: string | null
+          to_status: string
+        }
+        Insert: {
+          admin_id?: string | null
+          created_at?: string
+          donor_id: string
+          from_status: string
+          id?: string
+          reason?: string | null
+          to_status: string
+        }
+        Update: {
+          admin_id?: string | null
+          created_at?: string
+          donor_id?: string
+          from_status?: string
+          id?: string
+          reason?: string | null
+          to_status?: string
+        }
+        Relationships: []
+      }
+            request_responses: {
         Row: {
           created_at: string
           donor_id: string
@@ -201,6 +276,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_bloodconnect_admin: {
+        Args: never
+        Returns: boolean
+      }
+      review_donor: {
+        Args: {
+          decision: string
+          decision_reason?: string
+          target_donor_id: string
+        }
+        Returns: Json
+      }
+      
       accepted_request_contacts: {
         Args: { target_request_id: string }
         Returns: {
