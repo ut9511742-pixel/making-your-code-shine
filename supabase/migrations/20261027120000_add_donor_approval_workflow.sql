@@ -93,7 +93,11 @@ BEGIN
 
   donor_write := auth.uid() IS NOT NULL AND auth.uid() = OLD.user_id;
 
-  IF review_write AND (auth.uid() IS NULL OR NOT public.is_bloodconnect_admin()) THEN\n    RAISE EXCEPTION 'Administrator access required for approval fields' USING ERRCODE = '42501';\n  END IF;\n\n  IF NOT review_write AND (
+  IF review_write AND (auth.uid() IS NULL OR NOT public.is_bloodconnect_admin()) THEN
+    RAISE EXCEPTION 'Administrator access required for approval fields' USING ERRCODE = '42501';
+  END IF;
+
+  IF NOT review_write AND (
     NEW.approval_status IS DISTINCT FROM OLD.approval_status OR
     NEW.rejection_reason IS DISTINCT FROM OLD.rejection_reason OR
     NEW.requested_information IS DISTINCT FROM OLD.requested_information OR
