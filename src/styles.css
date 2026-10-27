@@ -200,6 +200,36 @@
   }
 }
 
+
+/* Light content cards improve readability against the dark dashboard canvas. */
+main .bg-card {
+  --color-ink: oklch(0.1695 0.0220 267.28);
+  --color-ink-soft: oklch(0.43 0.025 255);
+  --color-foreground: oklch(0.1695 0.0220 267.28);
+  --color-card-foreground: oklch(0.1695 0.0220 267.28);
+  --color-brand-ink: oklch(0.48 0.17 22.5);
+  --color-trust-ink: oklch(0.40 0.16 262.88);
+  --color-border: oklch(0.88 0.01 260);
+  color: var(--color-foreground);
+  background-color: oklch(1 0 0);
+  border-color: var(--color-border);
+}
+
+main .bg-card .bg-trust-soft {
+  --color-ink: oklch(1 0 0);
+  --color-ink-soft: oklch(0.90 0.02 253);
+  --color-foreground: oklch(1 0 0);
+  --color-brand-ink: oklch(0.81 0.10 20);
+  color: var(--color-foreground);
+}
+
+main .bg-card .bg-muted {
+  --color-ink: oklch(1 0 0);
+  --color-ink-soft: oklch(0.90 0.02 253);
+  --color-foreground: oklch(1 0 0);
+  color: var(--color-foreground);
+}
+
 .home-hero {
   background:
     radial-gradient(circle at 82% 16%, color-mix(in oklab, var(--color-brand) 16%, transparent), transparent 28%),
