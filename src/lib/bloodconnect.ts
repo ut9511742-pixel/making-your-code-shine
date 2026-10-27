@@ -1,5 +1,8 @@
 export const BLOOD_GROUPS = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"] as const;
 
+export const DONOR_CONSENT_VERSION = "bloodconnect-donor-v1";
+export const DONOR_CONSENT_TEXT = "I consent to BloodConnect coordinators reviewing my donor details and sharing my contact details only with matched request participants.";
+
 export type BloodGroup = (typeof BLOOD_GROUPS)[number];
 
 export type Profile = {
