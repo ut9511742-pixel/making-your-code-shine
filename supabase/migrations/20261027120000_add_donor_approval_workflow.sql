@@ -75,7 +75,7 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path = ''
 AS $$
 DECLARE
   review_write boolean := COALESCE(current_setting('bloodconnect.review_donor', true), '') = 'on';
-  donor_write boolean := auth.uid() IS NOT NULL AND auth.uid() = OLD.user_id;
+  donor_write boolean := false;
   identity_changed boolean;
 BEGIN
   IF TG_OP = 'INSERT' THEN
@@ -93,7 +93,7 @@ BEGIN
     RETURN NEW;
   END IF;
 
-  IF NOT review_write AND (
+  donor_write := auth.uid() IS NOT NULL AND auth.uid() = OLD.user_id;\n\n  IF NOT review_write AND (
     NEW.approval_status IS DISTINCT FROM OLD.approval_status OR
     NEW.rejection_reason IS DISTINCT FROM OLD.rejection_reason OR
     NEW.requested_information IS DISTINCT FROM OLD.requested_information OR
