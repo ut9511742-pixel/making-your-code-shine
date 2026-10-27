@@ -26,7 +26,7 @@ GRANT EXECUTE ON FUNCTION public.is_bloodconnect_admin() TO authenticated;
 CREATE TABLE public.donor_approval_audit (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   donor_id uuid NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
-  admin_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  actor_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   from_status text NOT NULL,
   to_status text NOT NULL,
   reason text,
@@ -149,7 +149,7 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path = ''
 AS $$
 BEGIN
   IF NEW.approval_status IS DISTINCT FROM OLD.approval_status THEN
-    INSERT INTO public.donor_approval_audit (donor_id, admin_id, from_status, to_status, reason)
+    INSERT INTO public.donor_approval_audit (donor_id, actor_id, from_status, to_status, reason)
     VALUES (
       NEW.user_id,
       COALESCE(auth.uid(), NEW.reviewed_by),
