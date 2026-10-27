@@ -93,7 +93,7 @@ BEGIN
 
   donor_write := auth.uid() IS NOT NULL AND auth.uid() = OLD.user_id;
 
-  IF NOT review_write AND (
+  IF review_write AND (auth.uid() IS NULL OR NOT public.is_bloodconnect_admin()) THEN\n    RAISE EXCEPTION 'Administrator access required for approval fields' USING ERRCODE = '42501';\n  END IF;\n\n  IF NOT review_write AND (
     NEW.approval_status IS DISTINCT FROM OLD.approval_status OR
     NEW.rejection_reason IS DISTINCT FROM OLD.rejection_reason OR
     NEW.requested_information IS DISTINCT FROM OLD.requested_information OR
@@ -199,7 +199,7 @@ BEGIN
   IF auth.uid() IS NULL OR NOT public.is_bloodconnect_admin() THEN
     RAISE EXCEPTION 'Administrator access required' USING ERRCODE = '42501';
   END IF;
-  IF decision NOT IN ('approved', 'rejected', 'needs_information') THEN
+  IF decision IS NULL OR decision NOT IN ('approved', 'rejected', 'needs_information') THEN
     RAISE EXCEPTION 'Unsupported donor review decision';
   END IF;
   IF decision = 'rejected' AND (decision_reason IS NULL OR char_length(btrim(decision_reason)) NOT BETWEEN 3 AND 1000) THEN
@@ -405,3 +405,45 @@ EXCEPTION WHEN unique_violation THEN RAISE EXCEPTION 'A pending or approved loca
 END;
 $$;
 
+
+CREATE OR REPLACE FUNCTION public.get_approved_donor_location(target_location_request_id uuid)
+RETURNS TABLE(latitude double precision, longitude double precision)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '' AS $$
+  SELECT donor.latitude, donor.longitude
+  FROM public.location_requests lr
+  JOIN public.profiles donor ON donor.user_id = lr.donor_id
+  WHERE auth.uid() IS NOT NULL
+    AND lr.id = target_location_request_id
+    AND lr.requester_id = auth.uid()
+    AND lr.status = 'approved'
+    AND donor.approval_status = 'approved'
+    AND donor.consent_at IS NOT NULL
+    AND donor.available
+    AND (donor.last_donation_date IS NULL OR donor.last_donation_date <= CURRENT_DATE - 90)
+$$;
+
+CREATE OR REPLACE FUNCTION public.respond_to_location_request(target_location_request_id uuid, approve boolean)
+RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE next_status text := CASE WHEN approve THEN 'approved' ELSE 'rejected' END;
+BEGIN
+  IF auth.uid() IS NULL THEN RAISE EXCEPTION 'Sign in to respond'; END IF;
+  IF approve AND NOT EXISTS (
+    SELECT 1 FROM public.location_requests lr
+    JOIN public.profiles donor ON donor.user_id = lr.donor_id
+    WHERE lr.id = target_location_request_id
+      AND lr.donor_id = auth.uid()
+      AND lr.status = 'pending'
+      AND donor.approval_status = 'approved'
+      AND donor.consent_at IS NOT NULL
+      AND donor.available
+      AND donor.blood_group IS NOT NULL
+      AND (donor.last_donation_date IS NULL OR donor.last_donation_date <= CURRENT_DATE - 90)
+  ) THEN
+    RAISE EXCEPTION 'Only approved, available donors who meet the existing donation interval can approve location sharing';
+  END IF;
+  UPDATE public.location_requests SET status = next_status, updated_at = now()
+  WHERE id = target_location_request_id AND donor_id = auth.uid() AND status = 'pending';
+  IF NOT FOUND THEN RAISE EXCEPTION 'This location request is no longer pending or does not belong to you'; END IF;
+  RETURN next_status;
+END;
+$$;
